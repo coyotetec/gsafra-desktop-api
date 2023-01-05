@@ -61,3 +61,17 @@ export interface ViewDetailDomain {
   descricao: string;
   tipoDocumento?: string;
 }
+
+export interface ViewTotalizadorPersistence {
+  ID: number;
+  ID_FINANCEIRO_VIEW_M: number;
+  TOTALIZADOR_NOME: string;
+  FORMULA: string;
+}
+
+export interface ViewTotalizadorDomain {
+  id: number;
+  idFinanceiroViewM: number;
+  totalizadorNome: string;
+  formula: string;
+}

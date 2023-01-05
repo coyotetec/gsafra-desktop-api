@@ -1,4 +1,4 @@
-import { ViewColumnDomain, ViewColumnPersistence, ViewDetailDomain, ViewDetailPersistence, ViewDomain, ViewPersistence } from '../../../types/FinanceiroViewTypes';
+import { ViewColumnDomain, ViewColumnPersistence, ViewDetailDomain, ViewDetailPersistence, ViewDomain, ViewPersistence, ViewTotalizadorDomain, ViewTotalizadorPersistence } from '../../../types/FinanceiroViewTypes';
 
 class FinanceiroViewMapper {
   toViewDomain(persistence: ViewPersistence): ViewDomain {
@@ -36,6 +36,15 @@ class FinanceiroViewMapper {
       documento: persistence.DOCUMENTO,
       descricao: persistence.DESCRICAO,
       tipoDocumento: persistence.TIPO_DOCUMENTO ? persistence.TIPO_DOCUMENTO.trim() : '',
+    };
+  }
+
+  toTotalizadorDomain(persistence: ViewTotalizadorPersistence): ViewTotalizadorDomain {
+    return {
+      id: persistence.ID,
+      idFinanceiroViewM: persistence.ID_FINANCEIRO_VIEW_M,
+      totalizadorNome: persistence.TOTALIZADOR_NOME,
+      formula: persistence.FORMULA,
     };
   }
 }

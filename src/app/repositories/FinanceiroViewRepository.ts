@@ -1,5 +1,5 @@
 import database from '../../database';
-import { ViewColumnDomain, ViewDetailDomain } from '../../types/FinanceiroViewTypes';
+import { ViewColumnDomain, ViewDetailDomain, ViewTotalizadorDomain } from '../../types/FinanceiroViewTypes';
 import FinanceiroViewMapper from './mappers/FinanceiroViewMapper';
 
 class FinanceiroViewRepository {
@@ -47,7 +47,7 @@ class FinanceiroViewRepository {
             reject(err);
           }
 
-          resolve(result.TOTAL);
+          resolve(result.TOTAL || 0);
         });
     });
   }
@@ -63,6 +63,24 @@ class FinanceiroViewRepository {
 
           resolve(result.map((column) => ({ nome, ...FinanceiroViewMapper.toViewDetailDomain(column) })));
         });
+    });
+  }
+
+  findTotalizadores(idView: number): Promise<ViewTotalizadorDomain[]> {
+    return new Promise((resolve, reject) => {
+      database.query(
+        `
+        select * from financeiro_view_totalizador
+        where financeiro_view_totalizador.id_financeiro_view_m = ?
+        `, [idView],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          }
+
+          resolve(result.map((totalizador) => FinanceiroViewMapper.toTotalizadorDomain(totalizador)));
+        }
+      );
     });
   }
 }

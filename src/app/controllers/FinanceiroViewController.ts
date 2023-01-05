@@ -2,6 +2,8 @@ import { format, parse } from 'date-fns';
 import { Request, Response } from 'express';
 import { viewDetailQuery, viewTotalQuery } from '../../database/queries/financeiroViewQueries';
 import FinanceiroViewRepository from '../repositories/FinanceiroViewRepository';
+import { dataHasZero } from '../utils/dataHasZero';
+import { executeFomula } from '../utils/executeFormula';
 
 class FinanceiroViewController {
   async index(request: Request, response: Response) {
@@ -85,10 +87,36 @@ class FinanceiroViewController {
 
       const viewTotal = await FinanceiroViewRepository.findViewTotal(query);
 
-      viewData.push({ nome: viewColumn.nome, total: viewTotal < 0 ? viewTotal * -1 : viewTotal });
+      viewData.push({ id: viewColumn.id, nome: viewColumn.nome, total: viewTotal < 0 ? viewTotal * -1 : viewTotal, totalReal: viewTotal });
     }
 
-    response.json(viewData);
+    const totalizadores = await FinanceiroViewRepository.findTotalizadores(Number(id));
+
+    const totalizadoresData = [];
+
+    for (const totalizador of totalizadores) {
+      let formula = totalizador.formula;
+
+      viewData.forEach((view) => {
+        const re = new RegExp(`\\[${view.id}\\]`, 'g');
+
+        formula = formula.replace(re, String(view.totalReal));
+      });
+
+      if (formula.includes('/') && dataHasZero(viewData)) {
+        totalizadoresData.push({
+          nome: totalizador.totalizadorNome,
+          error: 'Não é possível realizar divisões quando um dos dados é 0'
+        });
+        continue;
+      }
+
+      const result = executeFomula(formula);
+
+      totalizadoresData.push({ nome: totalizador.totalizadorNome, total: result });
+    }
+
+    response.json({ data: viewData, totalizadores: totalizadoresData });
   }
 }
 
