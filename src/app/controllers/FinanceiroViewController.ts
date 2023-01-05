@@ -106,7 +106,7 @@ class FinanceiroViewController {
       if (formula.includes('/') && dataHasZero(viewData)) {
         totalizadoresData.push({
           nome: totalizador.totalizadorNome,
-          error: 'Não é possível realizar divisões quando um dos dados é 0'
+          error: 'Erro divisão por zero.'
         });
         continue;
       }

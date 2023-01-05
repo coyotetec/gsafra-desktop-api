@@ -22,3 +22,5 @@ function Maior(...numbers: number[]) {
 function Menor(...numbers: number[]) {
   return Math.min(...numbers);
 }
+
+
