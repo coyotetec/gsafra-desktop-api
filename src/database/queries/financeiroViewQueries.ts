@@ -53,6 +53,7 @@ ${viewColumn.filtrarSafra ? `
 select
   movimento_conta_m.data_compensacao as data,
   sum(movimento_conta_ciclo.valor) as valor,
+  movimento_conta_m.tipo_lancamento,
   conta.descricao as conta_bancaria,
   pessoa.razao_social as pessoa,
   movimento_conta.documento,
@@ -71,6 +72,7 @@ left join financeiro_view_d_ciclo on financeiro_view_d_ciclo.id_financeiro_view_
 select
   movimento_conta_m.data_compensacao as data,
   sum(movimento_conta_apropriacao.valor) as valor,
+  movimento_conta_m.tipo_lancamento,
   conta.descricao as conta_bancaria,
   pessoa.razao_social as pessoa,
   movimento_conta.documento,
@@ -118,6 +120,7 @@ and movimento_conta_m.data_compensacao >= '${startDate}'
 and movimento_conta_m.data_compensacao <= '${endDate}'
 group by
   movimento_conta_m.data_compensacao,
+  movimento_conta_m.tipo_lancamento,
   conta.descricao,
   pessoa.razao_social,
   movimento_conta.documento,

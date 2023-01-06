@@ -31,6 +31,7 @@ class FinanceiroViewMapper {
     return {
       data: persistence.DATA,
       valor: persistence.VALOR,
+      tipoLancamento: persistence.TIPO_LANCAMENTO.trim(),
       contaBancaria: persistence.CONTA_BANCARIA,
       pessoa: persistence.PESSOA,
       documento: persistence.DOCUMENTO,

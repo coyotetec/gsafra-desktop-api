@@ -45,6 +45,7 @@ export interface ViewColumnDomain {
 export interface ViewDetailPersistence {
   DATA: Date;
   VALOR: number;
+  TIPO_LANCAMENTO: string;
   CONTA_BANCARIA: string;
   PESSOA: string;
   DOCUMENTO?: string;
@@ -55,6 +56,7 @@ export interface ViewDetailPersistence {
 export interface ViewDetailDomain {
   data: Date;
   valor: number;
+  tipoLancamento: string;
   contaBancaria: string;
   pessoa: string;
   documento?: string;

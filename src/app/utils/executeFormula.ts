@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export function executeFomula(formula: string) {
   const result: number = eval(formula);
 
