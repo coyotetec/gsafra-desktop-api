@@ -5,8 +5,8 @@ import MovimentoContaMapper from './mappers/MovimentoContaMapper';
 
 interface FindAllArgs {
   codigo: string;
-  startDate: Date;
-  endDate: Date;
+  startDate?: Date;
+  endDate?: Date;
   idSafra?: number;
 }
 
@@ -15,16 +15,16 @@ class MovimentoContaRepository {
     return new Promise((resolve, reject) => {
       let query = accountMovementsQuery(
         codigo,
-        format(startDate, 'yyyy-MM-dd'),
-        format(endDate, 'yyyy-MM-dd')
+        startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
+        endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
       );
 
       if (idSafra) {
         query = accountMovementsBySafraQuery(
           codigo,
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          idSafra
+          idSafra,
+          startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
+          endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
         );
       }
 

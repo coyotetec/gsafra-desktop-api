@@ -6,8 +6,8 @@ class MovimentoContaController {
   async index(request: Request, response: Response) {
     const { codigo } = request.params;
     const { startDate, endDate, idSafra } = request.query as {
-      startDate: string,
-      endDate: string,
+      startDate?: string,
+      endDate?: string,
       idSafra?: string
     };
 
@@ -15,15 +15,11 @@ class MovimentoContaController {
       return response.status(400).json({ message: 'Código é obrigatório' });
     }
 
-    if (!startDate || !endDate) {
-      return response.status(400).json({ message: 'Datas inicial e final são obrigatórias' });
-    }
-
-    const parsedStartDate = parse(startDate, 'dd-MM-yyyy', new Date());
-    const parsedEndDate = parse(endDate, 'dd-MM-yyyy', new Date());
     const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
+    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
-    if (parsedStartDate >= parsedEndDate) {
+    if (parsedStartDate && parsedEndDate && parsedStartDate >= parsedEndDate) {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 

@@ -5,7 +5,8 @@ class FinanceiroViewMapper {
     return {
       id: persistence.ID,
       nome: persistence.NOME,
-      situacao: persistence.SITUACAO
+      situacao: persistence.SITUACAO,
+      periodoPadraoMeses: persistence.PERIODO_PADRAO_MESES,
     };
   }
 
@@ -46,6 +47,7 @@ class FinanceiroViewMapper {
       idFinanceiroViewM: persistence.ID_FINANCEIRO_VIEW_M,
       totalizadorNome: persistence.TOTALIZADOR_NOME,
       formula: persistence.FORMULA,
+      formato: persistence.FORMATO,
     };
   }
 }

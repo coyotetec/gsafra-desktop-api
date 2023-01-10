@@ -2,9 +2,24 @@ import database from '../../database';
 import TotalMapper from './mappers/TotalMapper';
 
 import { TotalDomain } from '../../types/TotalTypes';
+import { format } from 'date-fns';
+
+interface FindTotalArgs {
+  tipo: 'pagar' | 'receber';
+  period: 0 | 7 | 15;
+  startDate?: Date;
+  endDate?: Date;
+  idSafra?: number;
+}
 
 class ChequeRepository {
-  findTotal(tipo: 'pagar' | 'receber', period: 0 | 7 | 15 = 0, idSafra?: number) {
+  findTotal({
+    tipo,
+    startDate,
+    endDate,
+    period = 0,
+    idSafra,
+  }: FindTotalArgs) {
     return new Promise<TotalDomain>((resolve, reject) => {
       let query = `
       SELECT
@@ -13,9 +28,12 @@ class ChequeRepository {
       FROM cheque
       WHERE tipo = ? AND situacao = 'A'
       ${period !== 0 ? `
-      AND data_vencimento >= current_date
-      AND data_vencimento < current_date + ${period}
-      ` : ''}
+      ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+      ${startDate ? `AND data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
+      ` : `
+      ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+      ${endDate ? `AND data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
+      `}
       `;
 
       if (idSafra) {
@@ -35,9 +53,12 @@ class ChequeRepository {
         WHERE cheque.tipo = ? AND cheque.situacao = 'A'
         AND cheque_ciclo.id_ciclo_producao = ?
         ${period !== 0 ? `
-        AND data_vencimento >= current_date
-        AND data_vencimento < current_date + ${period}
-        ` : ''}
+        ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+        ${startDate ? `AND data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
+        ` : `
+        ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+        ${endDate ? `AND data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
+        `}
         `;
       }
 

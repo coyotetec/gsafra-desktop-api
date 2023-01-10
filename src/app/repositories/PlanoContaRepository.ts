@@ -4,8 +4,8 @@ import PlanoContaMapper from './mappers/PlanoContaMapper';
 
 interface FindTotalArgs {
   codigo: string;
-  startDate: Date;
-  endDate: Date;
+  startDate?: Date;
+  endDate?: Date;
   idSafra?: number;
 }
 
@@ -43,8 +43,8 @@ class PlanoContaRepository {
       left join plano_conta on movimento_conta_apropriacao.id_plano_conta = plano_conta.id
       where plano_conta.codigo like '${codigo}.%'
       and plano_conta.categoria = 2
-      and movimento_conta_m.data_compensacao >= '${format(startDate, 'yyyy-MM-dd')}'
-      and movimento_conta_m.data_compensacao <= '${format(endDate, 'yyyy-MM-dd')}'
+      ${startDate ? `and movimento_conta_m.data_compensacao >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+      ${endDate ? `and movimento_conta_m.data_compensacao <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by descricao
       order by total desc
       `;
@@ -60,8 +60,8 @@ class PlanoContaRepository {
         where plano_conta.codigo like '${codigo}.%'
         and plano_conta.categoria = 2
         and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
-        and movimento_conta_m.data_compensacao >= '${format(startDate, 'yyyy-MM-dd')}'
-        and movimento_conta_m.data_compensacao <= '${format(endDate, 'yyyy-MM-dd')}'
+        ${startDate ? `and movimento_conta_m.data_compensacao >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+        ${endDate ? `and movimento_conta_m.data_compensacao <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         group by descricao
         order by total desc
         `;

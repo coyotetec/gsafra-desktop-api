@@ -2,12 +2,14 @@ export interface ViewPersistence {
   ID: number;
   NOME: string;
   SITUACAO: number;
+  PERIODO_PADRAO_MESES: number;
 }
 
 export interface ViewDomain {
   id: number;
   nome: string;
   situacao: number;
+  periodoPadraoMeses: number;
 }
 
 export interface ViewColumnPersistence {
@@ -69,6 +71,7 @@ export interface ViewTotalizadorPersistence {
   ID_FINANCEIRO_VIEW_M: number;
   TOTALIZADOR_NOME: string;
   FORMULA: string;
+  FORMATO: number;
 }
 
 export interface ViewTotalizadorDomain {
@@ -76,4 +79,5 @@ export interface ViewTotalizadorDomain {
   idFinanceiroViewM: number;
   totalizadorNome: string;
   formula: string;
+  formato: number;
 }

@@ -2,6 +2,13 @@ import database from '../../database';
 import TotalMapper from './mappers/TotalMapper';
 
 import { TotalDomain } from '../../types/TotalTypes';
+import { format } from 'date-fns';
+
+interface FindTotalArgs {
+  startDate?: Date;
+  endDate?: Date;
+  idSafra?: number;
+}
 
 class CartaoRepository {
   findLimitTotal() {
@@ -23,7 +30,7 @@ class CartaoRepository {
     });
   }
 
-  findTotal(idSafra?: number) {
+  findTotal({ startDate, endDate, idSafra }: FindTotalArgs) {
     return new Promise<TotalDomain>((resolve, reject) => {
       let query = `
       SELECT
@@ -31,6 +38,8 @@ class CartaoRepository {
       SUM(valor) AS total
       FROM cartao_pagar_d
       WHERE situacao = 0
+      ${startDate ? `AND vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+      ${endDate ? `AND vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       `;
 
       if (idSafra) {
@@ -48,6 +57,8 @@ class CartaoRepository {
         LEFT JOIN cartao_pagar_d_apropriacao ON cartao_pagar_d_apropriacao.id = cartao_pagar_d_ciclo.id_cartao_pagar_d_apropriacao
         LEFT JOIN cartao_pagar_d ON cartao_pagar_d.id = cartao_pagar_d_apropriacao.id_cartao_pagar_d
         WHERE cartao_pagar_d.situacao = 0
+        ${startDate ? `AND cartao_pagar_d.vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+        ${endDate ? `AND cartao_pagar_d.vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         AND cartao_pagar_d_ciclo.id_ciclo_producao = ?
         `;
       }

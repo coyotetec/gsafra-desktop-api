@@ -20,8 +20,22 @@ import { format } from 'date-fns';
 import { CashFlowDomain } from '../../types/FinanceiroTypes';
 import FinanceiroMapper from './mappers/FinanceiroMapper';
 
+interface FindTotalArgs {
+  tipo: 'pagar' | 'receber';
+  period: 0 | 7 | 15;
+  startDate?: Date;
+  endDate?: Date;
+  idSafra?: number;
+}
+
 class FinanceiroRepository {
-  findTotal(tipo: 'pagar' | 'receber', period: 0 | 7 | 15 = 0, idSafra?: number) {
+  findTotal({
+    tipo,
+    startDate,
+    endDate,
+    period = 0,
+    idSafra,
+  }: FindTotalArgs) {
     return new Promise<TotalDomain>((resolve, reject) => {
       let query = `
       SELECT
@@ -37,9 +51,12 @@ class FinanceiroRepository {
       LEFT JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
       WHERE crp_m.tipo = ? AND conta_receber_pagar.situacao = 'A'
       ${period !== 0 ? `
-      AND conta_receber_pagar.data_vencimento >= current_date
-      AND conta_receber_pagar.data_vencimento < current_date + ${period}
-      ` : ''}
+      ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+      ${startDate ? `AND conta_receber_pagar.data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
+      ` : `
+      ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+      ${endDate ? `AND conta_receber_pagar.data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
+      `}
       `;
 
       if (idSafra) {
@@ -64,9 +81,12 @@ class FinanceiroRepository {
         WHERE crp_m.tipo = ? AND conta_receber_pagar.situacao = 'A'
         AND conta_receber_pagar_ciclo.id_ciclo_producao = ?
         ${period !== 0 ? `
-        AND conta_receber_pagar.data_vencimento >= current_date
-        AND conta_receber_pagar.data_vencimento < current_date + ${period}
-        ` : ''}
+        ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+        ${startDate ? `AND conta_receber_pagar.data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
+        ` : `
+        ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+        ${endDate ? `AND conta_receber_pagar.data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
+        `}
         `;
       }
 

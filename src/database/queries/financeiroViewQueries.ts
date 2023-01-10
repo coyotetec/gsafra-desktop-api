@@ -1,6 +1,12 @@
 import { ViewColumnDomain } from '../../types/FinanceiroViewTypes';
 
-export const viewTotalQuery = (viewColumn: ViewColumnDomain, startDate: string, endDate: string) => `
+interface ViewTotalQueryArgs {
+  viewColumn: ViewColumnDomain,
+  startDate?: string,
+  endDate?: string,
+}
+
+export const viewTotalQuery = ({viewColumn, startDate, endDate}: ViewTotalQueryArgs) => `
 ${viewColumn.filtrarSafra ? `
 select sum(
   case when movimento_conta_m.tipo_lancamento = 'D'
@@ -44,11 +50,11 @@ left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id
 left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
 where financeiro_view_d.id = ${viewColumn.id}
 and movimento_conta_m.compensado = 'S'
-and movimento_conta_m.data_compensacao >= '${startDate}'
-and movimento_conta_m.data_compensacao <= '${endDate}'
+${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
+${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 `.replace(/^\s*$(?:\r\n?|\n)/gm, '');
 
-export const viewDetailQuery = (viewColumn: ViewColumnDomain, startDate: string, endDate: string) => `
+export const viewDetailQuery = ({viewColumn, startDate, endDate}: ViewTotalQueryArgs) => `
 ${viewColumn.filtrarSafra ? `
 select
   movimento_conta_m.data_compensacao as data,
@@ -116,8 +122,8 @@ left join conta on conta.id = movimento_conta_m.id_conta
 left join pessoa on pessoa.id = movimento_conta.id_pessoa
 where financeiro_view_d.id = ${viewColumn.id}
 and movimento_conta_m.compensado = 'S'
-and movimento_conta_m.data_compensacao >= '${startDate}'
-and movimento_conta_m.data_compensacao <= '${endDate}'
+${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
+${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 group by
   movimento_conta_m.data_compensacao,
   movimento_conta_m.tipo_lancamento,

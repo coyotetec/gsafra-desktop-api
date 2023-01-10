@@ -2,7 +2,6 @@ import { format, parse } from 'date-fns';
 import { Request, Response } from 'express';
 import { viewDetailQuery, viewTotalQuery } from '../../database/queries/financeiroViewQueries';
 import FinanceiroViewRepository from '../repositories/FinanceiroViewRepository';
-import { dataHasZero } from '../utils/dataHasZero';
 import { executeFomula } from '../utils/executeFormula';
 
 class FinanceiroViewController {
@@ -15,22 +14,18 @@ class FinanceiroViewController {
   async findDetail(request: Request, response: Response) {
     const { id } = request.params;
     const { startDate, endDate } = request.query as {
-      startDate: string,
-      endDate: string,
+      startDate?: string,
+      endDate?: string,
     };
 
     if (!id) {
       return response.status(400).json({ message: 'Id da view é obrigatório' });
     }
 
-    if (!startDate || !endDate) {
-      return response.status(400).json({ message: 'Datas inicial e final são obrigatórias' });
-    }
+    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
-    const parsedStartDate = parse(startDate, 'dd-MM-yyyy', new Date());
-    const parsedEndDate = parse(endDate, 'dd-MM-yyyy', new Date());
-
-    if (parsedStartDate >= parsedEndDate) {
+    if (parsedStartDate && parsedEndDate && parsedStartDate >= parsedEndDate) {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
@@ -39,11 +34,11 @@ class FinanceiroViewController {
     const data = [];
 
     for (const viewColumn of viewColumns) {
-      const query = viewDetailQuery(
+      const query = viewDetailQuery({
         viewColumn,
-        format(parsedStartDate, 'yyyy-MM-dd'),
-        format(parsedEndDate, 'yyyy-MM-dd')
-      );
+        startDate: parsedStartDate ? format(parsedStartDate, 'yyyy-MM-dd') : undefined,
+        endDate: parsedEndDate ? format(parsedEndDate, 'yyyy-MM-dd') : undefined,
+      });
 
       const viewDetails = await FinanceiroViewRepository.findViewDetails(viewColumn.nome, query);
 
@@ -56,22 +51,18 @@ class FinanceiroViewController {
   async find(request: Request, response: Response) {
     const { id } = request.params;
     const { startDate, endDate } = request.query as {
-      startDate: string,
-      endDate: string,
+      startDate?: string,
+      endDate?: string,
     };
 
     if (!id) {
       return response.status(400).json({ message: 'Id da view é obrigatório' });
     }
 
-    if (!startDate || !endDate) {
-      return response.status(400).json({ message: 'Datas inicial e final são obrigatórias' });
-    }
+    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
-    const parsedStartDate = parse(startDate, 'dd-MM-yyyy', new Date());
-    const parsedEndDate = parse(endDate, 'dd-MM-yyyy', new Date());
-
-    if (parsedStartDate >= parsedEndDate) {
+    if (parsedStartDate && parsedEndDate && parsedStartDate >= parsedEndDate) {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
@@ -79,11 +70,11 @@ class FinanceiroViewController {
     const viewData = [];
 
     for (const viewColumn of viewColumns) {
-      const query = viewTotalQuery(
+      const query = viewTotalQuery({
         viewColumn,
-        format(parsedStartDate, 'yyyy-MM-dd'),
-        format(parsedEndDate, 'yyyy-MM-dd')
-      );
+        startDate: parsedStartDate ? format(parsedStartDate, 'yyyy-MM-dd') : undefined,
+        endDate: parsedEndDate ? format(parsedEndDate, 'yyyy-MM-dd') : undefined,
+      });
 
       const viewTotal = await FinanceiroViewRepository.findViewTotal(query);
 
@@ -100,20 +91,24 @@ class FinanceiroViewController {
       viewData.forEach((view) => {
         const re = new RegExp(`\\[${view.id}\\]`, 'g');
 
-        formula = formula.replace(re, String(view.totalReal));
+        formula = formula.replace(re, String(view.total));
       });
 
-      if (formula.includes('/') && dataHasZero(viewData)) {
+      const result = executeFomula(formula);
+
+      if (result === 'NaN') {
         totalizadoresData.push({
           nome: totalizador.totalizadorNome,
-          error: 'Erro divisão por zero.'
+          error: 'Erro na fórmula.'
         });
         continue;
       }
 
-      const result = executeFomula(formula);
-
-      totalizadoresData.push({ nome: totalizador.totalizadorNome, total: result });
+      totalizadoresData.push({
+        nome: totalizador.totalizadorNome,
+        total: result,
+        formato: totalizador.formato
+      });
     }
 
     response.json({ data: viewData, totalizadores: totalizadoresData });
