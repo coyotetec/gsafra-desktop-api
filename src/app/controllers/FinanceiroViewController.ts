@@ -91,7 +91,7 @@ class FinanceiroViewController {
       viewData.forEach((view) => {
         const re = new RegExp(`\\[${view.id}\\]`, 'g');
 
-        formula = formula.replace(re, String(view.total));
+        formula = formula.replace(re, String(view.totalReal));
       });
 
       const result = executeFomula(formula);
