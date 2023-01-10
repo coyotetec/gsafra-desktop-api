@@ -96,7 +96,7 @@ class FinanceiroViewController {
 
       const result = executeFomula(formula);
 
-      if (result === 'NaN' || result === 'Infinity') {
+      if (['Infinity', '-Infinity', 'NaN'].includes(result)) {
         totalizadoresData.push({
           nome: totalizador.totalizadorNome,
           error: 'Erro na fórmula.'
