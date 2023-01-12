@@ -78,7 +78,13 @@ class FinanceiroViewController {
 
       const viewTotal = await FinanceiroViewRepository.findViewTotal(query);
 
-      viewData.push({ id: viewColumn.id, nome: viewColumn.nome, total: viewTotal < 0 ? viewTotal * -1 : viewTotal, totalReal: viewTotal });
+      viewData.push({
+        id: viewColumn.id,
+        nome: viewColumn.nome,
+        total: viewTotal < 0 ? viewTotal * -1 : viewTotal,
+        totalReal: viewTotal,
+        visivel: viewColumn.visivel,
+      });
     }
 
     const totalizadores = await FinanceiroViewRepository.findTotalizadores(Number(id));

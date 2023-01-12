@@ -24,7 +24,9 @@ class FinanceiroViewMapper {
       filtrarCentroCusto: Boolean(persistence.FILTRAR_CENTRO_CUSTO),
       filtrarSafra: Boolean(persistence.FILTRAR_SAFRA),
       filtrarPatrimonio: Boolean(persistence.FILTRAR_PATRIMONIO),
-      filtrarEmpresa: Boolean(persistence.FILTRAR_EMPRESA)
+      filtrarEmpresa: Boolean(persistence.FILTRAR_EMPRESA),
+      filtrarPessoa: Boolean(persistence.FILTRAR_PESSOA),
+      visivel: Boolean(persistence.VISIVEL),
     };
   }
 

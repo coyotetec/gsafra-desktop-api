@@ -35,6 +35,9 @@ left join financeiro_view_d_patrimonio on financeiro_view_d_patrimonio.id_financ
 ${viewColumn.filtrarEmpresa ? `
 left join financeiro_view_d_empresa on financeiro_view_d_empresa.id_financeiro_view_d = financeiro_view_d.id
 ` : ''}
+${viewColumn.filtrarPessoa ? `
+left join financeiro_view_d_pessoa on financeiro_view_d_pessoa.id_financeiro_view_d = financeiro_view_d.id
+` : ''}
 inner join movimento_conta_apropriacao
 on movimento_conta_apropriacao.id > 0
 ${viewColumn.filtrarPlanoConta ? 'and movimento_conta_apropriacao.id_plano_conta = financeiro_view_d_pc.id_plano_conta' : ''}
@@ -46,7 +49,12 @@ inner join movimento_conta_ciclo
 on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
 and movimento_conta_ciclo.id_ciclo_producao = financeiro_view_d_ciclo.id_ciclo_producao
 ` : ''}
+${viewColumn.filtrarPessoa ? `
+inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+and movimento_conta.id_pessoa = financeiro_view_d_pessoa.id_pessoa
+` : `
 left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+`}
 left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
 where financeiro_view_d.id = ${viewColumn.id}
 and movimento_conta_m.compensado = 'S'

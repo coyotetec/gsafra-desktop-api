@@ -25,7 +25,9 @@ export interface ViewColumnPersistence {
   FILTRAR_CENTRO_CUSTO: number;
   FILTRAR_SAFRA: number;
   FILTRAR_PATRIMONIO: number;
-  FILTRAR_EMPRESA: number
+  FILTRAR_EMPRESA: number;
+  FILTRAR_PESSOA: number;
+  VISIVEL: number;
 }
 
 export interface ViewColumnDomain {
@@ -41,7 +43,9 @@ export interface ViewColumnDomain {
   filtrarCentroCusto: boolean;
   filtrarSafra: boolean;
   filtrarPatrimonio: boolean;
-  filtrarEmpresa: boolean
+  filtrarEmpresa: boolean;
+  filtrarPessoa: boolean;
+  visivel: boolean;
 }
 
 export interface ViewDetailPersistence {
