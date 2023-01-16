@@ -11,20 +11,25 @@ import PlanoContaController from './app/controllers/PlanoContaController';
 import MovimentoContaController from './app/controllers/MovimentoContaController';
 import FinanceiroViewController from './app/controllers/FinanceiroViewController';
 import UsuarioController from './app/controllers/UsuarioController';
+import PatrimonioController from './app/controllers/PatrimonioController';
+import CombustivelController from './app/controllers/CombustivelController';
+import AlmoxarifadoController from './app/controllers/AlmoxarifadoController';
+import TipoPatrimonioController from './app/controllers/TipoPatrimonioController';
 
 const router = Router();
 
 router.get('/financeiro/pagar/total', ContaPagarController.total);
 router.get('/financeiro/receber/total', ContaReceberController.total);
-
 router.get('/financeiro/cheque/pagar/total', ChequePagarController.total);
 router.get('/financeiro/cheque/receber/total', ChequeReceberController.total);
-
 router.get('/financeiro/cartao/total', CartaoController.total);
-
 router.get('/financeiro/fluxo-caixa', FinanceiroController.cashFlow);
 
 router.get('/safras', SafraController.index);
+router.get('/patrimonios', PatrimonioController.index);
+router.get('/combustiveis', CombustivelController.index);
+router.get('/almoxarifados', AlmoxarifadoController.index);
+router.get('/tipos-patrimonio', TipoPatrimonioController.index);
 
 router.get('/plano-conta', PlanoContaController.index);
 router.get('/plano-conta/total/:codigo', PlanoContaController.total);
