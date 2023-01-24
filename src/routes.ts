@@ -15,6 +15,7 @@ import PatrimonioController from './app/controllers/PatrimonioController';
 import CombustivelController from './app/controllers/CombustivelController';
 import AlmoxarifadoController from './app/controllers/AlmoxarifadoController';
 import TipoPatrimonioController from './app/controllers/TipoPatrimonioController';
+import AbastecimentoController from './app/controllers/AbastecimentoController';
 
 const router = Router();
 
@@ -39,6 +40,11 @@ router.get('/movimento-conta/:codigo', MovimentoContaController.index);
 router.get('/financeiro-views', FinanceiroViewController.index);
 router.get('/financeiro-views/:id', FinanceiroViewController.find);
 router.get('/financeiro-views/:id/detalhes', FinanceiroViewController.findDetail);
+
+router.get('/abastecimento/resumo-mensal', AbastecimentoController.totalMonthly);
+router.get('/abastecimento/resumo-combustivel', AbastecimentoController.totalFuel);
+router.get('/abastecimento/resumo-patrimonio', AbastecimentoController.totalPatrimony);
+router.get('/abastecimento/detalhes', AbastecimentoController.description);
 
 router.get('/usuario/:id/permissoes', UsuarioController.permissions);
 

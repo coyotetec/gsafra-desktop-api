@@ -6,6 +6,32 @@ interface ViewTotalQueryArgs {
   endDate?: string,
 }
 
+function createApropriacaoArray(viewColumn: ViewColumnDomain) {
+  const apropriacaoArray = [];
+
+  if (viewColumn.apropriacaoCusto1) {
+    apropriacaoArray.push(1);
+  }
+
+  if (viewColumn.apropriacaoCusto2) {
+    apropriacaoArray.push(2);
+  }
+
+  if (viewColumn.apropriacaoCusto3) {
+    apropriacaoArray.push(3);
+  }
+
+  if (viewColumn.apropriacaoCusto4) {
+    apropriacaoArray.push(4);
+  }
+
+  if (viewColumn.apropriacaoCusto44) {
+    apropriacaoArray.push(44);
+  }
+
+  return apropriacaoArray.join(', ');
+}
+
 export const viewTotalQuery = ({viewColumn, startDate, endDate}: ViewTotalQueryArgs) => `
 ${viewColumn.filtrarSafra ? `
 select sum(
@@ -60,6 +86,7 @@ where financeiro_view_d.id = ${viewColumn.id}
 and movimento_conta_m.compensado = 'S'
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
+and movimento_conta_apropriacao.apropriacao_custo in (${createApropriacaoArray(viewColumn)})
 `.replace(/^\s*$(?:\r\n?|\n)/gm, '');
 
 export const viewDetailQuery = ({viewColumn, startDate, endDate}: ViewTotalQueryArgs) => `
@@ -132,6 +159,7 @@ where financeiro_view_d.id = ${viewColumn.id}
 and movimento_conta_m.compensado = 'S'
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
+and movimento_conta_apropriacao.apropriacao_custo in (${createApropriacaoArray(viewColumn)})
 group by
   movimento_conta_m.data_compensacao,
   movimento_conta_m.tipo_lancamento,

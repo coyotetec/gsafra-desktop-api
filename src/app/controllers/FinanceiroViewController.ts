@@ -25,7 +25,7 @@ class FinanceiroViewController {
     const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
     const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
-    if (parsedStartDate && parsedEndDate && parsedStartDate >= parsedEndDate) {
+    if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
@@ -62,7 +62,7 @@ class FinanceiroViewController {
     const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
     const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
-    if (parsedStartDate && parsedEndDate && parsedStartDate >= parsedEndDate) {
+    if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 

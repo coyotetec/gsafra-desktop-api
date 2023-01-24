@@ -20,7 +20,7 @@ class FinanceiroController {
     const parsedEndDate = parse(endDate, 'dd-MM-yyyy', new Date());
     const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
 
-    if (parsedStartDate >= parsedEndDate) {
+    if (parsedStartDate > parsedEndDate) {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
