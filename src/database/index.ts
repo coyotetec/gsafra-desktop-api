@@ -1,13 +1,13 @@
 import Firebird from 'node-firebird';
-import { dbOptions } from '../config/database';
+import { dbOptionsGen } from '../config/database';
 
 export default {
   query(
     query: string,
     params: any[],
-    callback: (err: any, result: any[]) => void
+    callback: (err: any, result: any[]) => void,
   ) {
-    Firebird.attach(dbOptions, (err, db) => {
+    Firebird.attach(dbOptionsGen(), (err, db) => {
       if (err) {
         return callback(err, []);
       }

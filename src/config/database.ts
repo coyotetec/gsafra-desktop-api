@@ -1,12 +1,24 @@
 import Firebird from 'node-firebird';
+import fs from 'node:fs';
 import path from 'node:path';
 
-export const dbOptions: Firebird.Options = {
-  host: '127.0.0.1',
-  port: 3050,
-  database: path.resolve(__dirname, '..', '..', '..', '..', 'Dados', 'AGRO.FDB'),
-  user: 'SYSDBA',
-  password: 'masterkey',
-  lowercase_keys: false,
-  pageSize: 4096,
-};
+let databaseName = 'default';
+
+export function updateDatabaseName(newName: string) {
+  databaseName = newName;
+}
+
+export function dbOptionsGen(): Firebird.Options {
+  const data = fs.readFileSync(path.resolve(__dirname, '..', '..', '..', 'dbPaths.json'), 'utf8');
+  const dbPaths = JSON.parse(data);
+
+  return {
+    host: '127.0.0.1',
+    port: 3050,
+    database: dbPaths[databaseName],
+    user: 'SYSDBA',
+    password: 'masterkey',
+    lowercase_keys: false,
+    pageSize: 4096,
+  };
+}
