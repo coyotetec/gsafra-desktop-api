@@ -17,6 +17,8 @@ import AlmoxarifadoController from './app/controllers/AlmoxarifadoController';
 import TipoPatrimonioController from './app/controllers/TipoPatrimonioController';
 import AbastecimentoController from './app/controllers/AbastecimentoController';
 
+import updateDatabaseName from './app/middlewares/updateDatabaseName';
+
 const router = Router();
 
 router.get('/financeiro/pagar/total', ContaPagarController.total);
@@ -46,6 +48,6 @@ router.get('/abastecimento/resumo-combustivel', AbastecimentoController.totalFue
 router.get('/abastecimento/resumo-patrimonio', AbastecimentoController.totalPatrimony);
 router.get('/abastecimento/detalhes', AbastecimentoController.description);
 
-router.get('/usuario/:id/permissoes', UsuarioController.permissions);
+router.get('/usuario/:id/permissoes', updateDatabaseName, UsuarioController.permissions);
 
 export default router;
