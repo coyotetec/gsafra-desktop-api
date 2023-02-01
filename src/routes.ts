@@ -18,6 +18,7 @@ import TipoPatrimonioController from './app/controllers/TipoPatrimonioController
 import AbastecimentoController from './app/controllers/AbastecimentoController';
 
 import updateDatabaseName from './app/middlewares/updateDatabaseName';
+import ColheitaController from './app/controllers/ColheitaController';
 
 const router = Router();
 
@@ -47,6 +48,8 @@ router.get('/abastecimento/resumo-mensal', AbastecimentoController.totalMonthly)
 router.get('/abastecimento/resumo-combustivel', AbastecimentoController.totalFuel);
 router.get('/abastecimento/resumo-patrimonio', AbastecimentoController.totalPatrimony);
 router.get('/abastecimento/detalhes', AbastecimentoController.description);
+
+router.get('/colheita/total', ColheitaController.total);
 
 router.get('/usuario/:id/permissoes', updateDatabaseName, UsuarioController.permissions);
 
