@@ -39,54 +39,46 @@ select sum(
   then(movimento_conta_ciclo.valor * -1)
   else(movimento_conta_ciclo.valor) end
 ) as total
-from financeiro_view_d
-left join financeiro_view_d_ciclo on financeiro_view_d_ciclo.id_financeiro_view_d = financeiro_view_d.id
+from movimento_conta_apropriacao
+left join movimento_conta_ciclo on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
 ` : `
 select sum(
   case when movimento_conta_m.tipo_lancamento = 'D'
   then(movimento_conta_apropriacao.valor * -1)
   else(movimento_conta_apropriacao.valor) end
 ) as total
-from financeiro_view_d
+from movimento_conta_apropriacao
 `}
-${viewColumn.filtrarPlanoConta ? `
-left join financeiro_view_d_pc on financeiro_view_d_pc.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-${viewColumn.filtrarCentroCusto ? `
-left join financeiro_view_d_cc on financeiro_view_d_cc.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-${viewColumn.filtrarPatrimonio ? `
-left join financeiro_view_d_patrimonio on financeiro_view_d_patrimonio.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-${viewColumn.filtrarEmpresa ? `
-left join financeiro_view_d_empresa on financeiro_view_d_empresa.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-${viewColumn.filtrarPessoa ? `
-left join financeiro_view_d_pessoa on financeiro_view_d_pessoa.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-inner join movimento_conta_apropriacao
-on movimento_conta_apropriacao.id > 0
-${viewColumn.filtrarPlanoConta ? 'and movimento_conta_apropriacao.id_plano_conta = financeiro_view_d_pc.id_plano_conta' : ''}
-${viewColumn.filtrarCentroCusto ? 'and movimento_conta_apropriacao.id_centro_custo = financeiro_view_d_cc.id_centro_custo' : ''}
-${viewColumn.filtrarPatrimonio ? 'and movimento_conta_apropriacao.id_patrimonio = financeiro_view_d_patrimonio.id_patrimonio' : ''}
-${viewColumn.filtrarEmpresa ? 'and movimento_conta_apropriacao.id_empresa = financeiro_view_d_empresa.id_empresa' : ''}
-${viewColumn.filtrarSafra ? `
-inner join movimento_conta_ciclo
-on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
-and movimento_conta_ciclo.id_ciclo_producao = financeiro_view_d_ciclo.id_ciclo_producao
-` : ''}
-${viewColumn.filtrarPessoa ? `
-inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-and movimento_conta.id_pessoa = financeiro_view_d_pessoa.id_pessoa
-` : `
 left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-`}
 left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
-where financeiro_view_d.id = ${viewColumn.id}
-and movimento_conta_m.compensado = 'S'
+where movimento_conta_m.compensado = 'S'
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 and movimento_conta_apropriacao.apropriacao_custo in (${createApropriacaoArray(viewColumn)})
+${viewColumn.filtrarPlanoConta ? `
+and movimento_conta_apropriacao.id_plano_conta in
+  (select id_plano_conta from financeiro_view_d_pc where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarCentroCusto ? `
+and movimento_conta_apropriacao.id_centro_custo in
+  (select id_centro_custo from financeiro_view_d_cc where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarPatrimonio ? `
+and movimento_conta_apropriacao.id_patrimonio in
+  (select id_patrimonio from financeiro_view_d_patrimonio where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarEmpresa ? `
+and movimento_conta_apropriacao.id_empresa in
+  (select id_empresa from financeiro_view_d_empresa where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarPessoa ? `
+and movimento_conta.id_pessoa in
+  (select id_pessoa from financeiro_view_d_pessoa where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarSafra ? `
+and movimento_conta_ciclo.id_ciclo_producao in
+  (select id_ciclo_producao from financeiro_view_d_ciclo where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
 `.replace(/^\s*$(?:\r\n?|\n)/gm, '');
 
 export const viewDetailQuery = ({viewColumn, startDate, endDate}: ViewTotalQueryArgs) => `
@@ -107,8 +99,8 @@ select
     when 5 then 'Folha de Pagamento'
     when 6 then 'Outro'
   end as tipo_documento
-from financeiro_view_d
-left join financeiro_view_d_ciclo on financeiro_view_d_ciclo.id_financeiro_view_d = financeiro_view_d.id
+from movimento_conta_apropriacao
+left join movimento_conta_ciclo on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
 ` : `
 select
   movimento_conta_m.data_compensacao as data,
@@ -126,40 +118,40 @@ select
     when 5 then 'Folha de Pagamento'
     when 6 then 'Outro'
   end as tipo_documento
-from financeiro_view_d
+from movimento_conta_apropriacao
 `}
-${viewColumn.filtrarPlanoConta ? `
-left join financeiro_view_d_pc on financeiro_view_d_pc.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-${viewColumn.filtrarCentroCusto ? `
-left join financeiro_view_d_cc on financeiro_view_d_cc.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-${viewColumn.filtrarPatrimonio ? `
-left join financeiro_view_d_patrimonio on financeiro_view_d_patrimonio.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-${viewColumn.filtrarEmpresa ? `
-left join financeiro_view_d_empresa on financeiro_view_d_empresa.id_financeiro_view_d = financeiro_view_d.id
-` : ''}
-inner join movimento_conta_apropriacao
-on movimento_conta_apropriacao.id > 0
-${viewColumn.filtrarPlanoConta ? 'and movimento_conta_apropriacao.id_plano_conta = financeiro_view_d_pc.id_plano_conta' : ''}
-${viewColumn.filtrarCentroCusto ? 'and movimento_conta_apropriacao.id_centro_custo = financeiro_view_d_cc.id_centro_custo' : ''}
-${viewColumn.filtrarPatrimonio ? 'and movimento_conta_apropriacao.id_patrimonio = financeiro_view_d_patrimonio.id_patrimonio' : ''}
-${viewColumn.filtrarEmpresa ? 'and movimento_conta_apropriacao.id_empresa = financeiro_view_d_empresa.id_empresa' : ''}
-${viewColumn.filtrarSafra ? `
-inner join movimento_conta_ciclo
-on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
-and movimento_conta_ciclo.id_ciclo_producao = financeiro_view_d_ciclo.id_ciclo_producao
-` : ''}
 left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
 left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
 left join conta on conta.id = movimento_conta_m.id_conta
 left join pessoa on pessoa.id = movimento_conta.id_pessoa
-where financeiro_view_d.id = ${viewColumn.id}
-and movimento_conta_m.compensado = 'S'
+where movimento_conta_m.compensado = 'S'
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 and movimento_conta_apropriacao.apropriacao_custo in (${createApropriacaoArray(viewColumn)})
+${viewColumn.filtrarPlanoConta ? `
+and movimento_conta_apropriacao.id_plano_conta in
+  (select id_plano_conta from financeiro_view_d_pc where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarCentroCusto ? `
+and movimento_conta_apropriacao.id_centro_custo in
+  (select id_centro_custo from financeiro_view_d_cc where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarPatrimonio ? `
+and movimento_conta_apropriacao.id_patrimonio in
+  (select id_patrimonio from financeiro_view_d_patrimonio where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarEmpresa ? `
+and movimento_conta_apropriacao.id_empresa in
+  (select id_empresa from financeiro_view_d_empresa where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarPessoa ? `
+and movimento_conta.id_pessoa in
+  (select id_pessoa from financeiro_view_d_pessoa where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
+${viewColumn.filtrarSafra ? `
+and movimento_conta_ciclo.id_ciclo_producao in
+  (select id_ciclo_producao from financeiro_view_d_ciclo where id_financeiro_view_d = ${viewColumn.id})
+` : ''}
 group by
   movimento_conta_m.data_compensacao,
   movimento_conta_m.tipo_lancamento,
