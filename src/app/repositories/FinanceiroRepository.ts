@@ -114,7 +114,7 @@ class FinanceiroRepository {
           then(valor_principal * -1)
           else(valor_principal) end) as saldo_atual
         from movimento_conta_m
-        where data_compensacao < dateadd(day, -1, date '${parsedDate}')
+        where data_compensacao < '${parsedDate}'
         and compensado = 'S'
         `, [],
         (err, [result]) => {
