@@ -6,7 +6,9 @@ import {
   TotalPatrimonyPersistence,
   TotalPatrimonyDomain,
   DetailsPersistence,
-  DetailsDomain
+  DetailsDomain,
+  TotalBySafraPersistence,
+  TotalBySafraDomain
 } from '../../../types/AbastecimentoTypes';
 
 class AbastecimentoMapper {
@@ -44,6 +46,14 @@ class AbastecimentoMapper {
       quantidade: persistence.QUANTIDADE,
       custoIndividual: persistence.CUSTO_INDIVIDUAL,
       total: persistence.TOTAL,
+    };
+  }
+
+  toTotalBySafraDomain(persistence: TotalBySafraPersistence): TotalBySafraDomain {
+    return {
+      insumo: persistence.INSUMO,
+      total: persistence.TOTAL,
+      quantidade: persistence.QUANTIDADE
     };
   }
 }

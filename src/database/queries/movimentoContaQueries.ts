@@ -24,6 +24,7 @@ left join plano_conta on plano_conta.id = movimento_conta_apropriacao.id_plano_c
 left join pessoa on pessoa.id = movimento_conta.id_pessoa
 where plano_conta.codigo like '${codigo}.%'
 and plano_conta.categoria = 2
+and movimento_conta.entre_empresas <> 1
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 `;
@@ -55,6 +56,7 @@ left join plano_conta on plano_conta.id = movimento_conta_apropriacao.id_plano_c
 left join pessoa on pessoa.id = movimento_conta.id_pessoa
 where plano_conta.codigo like '${codigo}.%'
 and plano_conta.categoria = 2
+and movimento_conta.entre_empresas <> 1
 and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}

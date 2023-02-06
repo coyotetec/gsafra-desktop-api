@@ -216,6 +216,37 @@ class AbastecimentoController {
 
     return response.json(details);
   }
+
+  async totalFuelBySafra(request: Request, response: Response) {
+    const { idSafra, idTalhao, startDate, endDate } = request.query as {
+      idSafra?: string;
+      idTalhao?: string;
+      startDate?: string;
+      endDate?: string;
+    };
+
+    if (!idSafra) {
+      return response.status(400).json({ message: 'Id safra é obrigatório' });
+    }
+
+    const parsedIdSafra = Number(idSafra);
+    const parsedIdTalhao = idTalhao ? Number(idTalhao) : undefined;
+    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+
+    if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
+      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+    }
+
+    const fuelTotal = await AbastecimentoRepository.findTotalFuelBySafra({
+      idSafra: parsedIdSafra,
+      idTalhao: parsedIdTalhao,
+    });
+    const fuelTotalSafra = fuelTotal.reduce((acc, curr) => acc + curr.total, 0);
+    const fuelTotalQtySafra = fuelTotal.reduce((acc, curr) => acc + curr.quantidade, 0);
+
+    response.json({ fuelTotalSafra, fuelTotalQtySafra, fuelTotal });
+  }
 }
 
 export default new AbastecimentoController();

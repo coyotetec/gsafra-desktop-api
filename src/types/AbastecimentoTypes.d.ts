@@ -56,3 +56,15 @@ export interface DetailsDomain {
   custoIndividual: number;
   total: number;
 }
+
+export interface TotalBySafraPersistence {
+  INSUMO: string;
+  TOTAL: number;
+  QUANTIDADE: number;
+}
+
+export interface TotalBySafraDomain {
+  insumo: string;
+  total: number;
+  quantidade: number;
+}

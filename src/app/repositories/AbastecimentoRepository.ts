@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import database from '../../database';
-import { DetailsDomain, TotalDomain, TotalFuelDomain, TotalPatrimonyDomain } from '../../types/AbastecimentoTypes';
+import { DetailsDomain, TotalBySafraDomain, TotalDomain, TotalFuelDomain, TotalPatrimonyDomain } from '../../types/AbastecimentoTypes';
 import AbastecimentoMapper from './mappers/AbastecimentoMapper';
 
 interface FindTotalValueArgs {
@@ -22,6 +22,13 @@ interface FindTotalQtyArgs {
   idTipoPatrimonio?: number,
 }
 
+interface FindTotalBySafraArgs {
+  idSafra: number;
+  idTalhao?: number;
+  startDate?: Date;
+  endDate?: Date;
+}
+
 class AbastecimentoRepository {
   findTotalMonthlyValue({
     startDate,
@@ -41,10 +48,10 @@ class AbastecimentoRepository {
       from abastecimento
       left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
       where abastecimento.estoque_movimentado = 1
-      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : '' }
-      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : '' }
-      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : '' }
-      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : '' }
+      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
+      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
+      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : ''}
+      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : ''}
       ${startDate ? `AND abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by mes, ano
@@ -81,10 +88,10 @@ class AbastecimentoRepository {
       from abastecimento
       left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
       where abastecimento.estoque_movimentado = 1
-      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : '' }
-      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : '' }
-      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : '' }
-      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : '' }
+      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
+      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
+      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : ''}
+      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : ''}
       ${startDate ? `AND abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by mes, ano
@@ -133,10 +140,10 @@ class AbastecimentoRepository {
       left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
       left join almoxarifado on almoxarifado.id = abastecimento.id_almoxarifado
       where abastecimento.estoque_movimentado = 1
-      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : '' }
-      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : '' }
-      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : '' }
-      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : '' }
+      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
+      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
+      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : ''}
+      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : ''}
       ${startDate ? `AND abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       order by ano, mes
@@ -173,10 +180,10 @@ class AbastecimentoRepository {
       left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
       left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
       where abastecimento.estoque_movimentado = 1
-      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : '' }
-      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : '' }
-      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : '' }
-      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : '' }
+      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
+      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
+      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : ''}
+      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : ''}
       ${startDate ? `AND abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by combustivel
@@ -212,10 +219,10 @@ class AbastecimentoRepository {
       left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
       left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
       where abastecimento.estoque_movimentado = 1
-      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : '' }
-      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : '' }
-      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : '' }
-      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : '' }
+      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
+      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
+      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : ''}
+      ${idTipoPatrimonio ? `and patrimonio.id_tipo_patrimonio = ${idTipoPatrimonio}` : ''}
       ${startDate ? `AND abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by combustivel
@@ -251,9 +258,9 @@ class AbastecimentoRepository {
       left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
       left join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
       where abastecimento.estoque_movimentado = 1
-      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : '' }
-      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : '' }
-      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : '' }
+      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
+      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
+      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : ''}
       ${startDate ? `AND abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by tipo_patrimonio
@@ -288,9 +295,9 @@ class AbastecimentoRepository {
       left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
       left join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
       where abastecimento.estoque_movimentado = 1
-      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : '' }
-      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : '' }
-      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : '' }
+      ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
+      ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
+      ${idAlmoxarifado ? `and abastecimento.id_almoxarifado = ${idAlmoxarifado}` : ''}
       ${startDate ? `AND abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by tipo_patrimonio
@@ -304,6 +311,41 @@ class AbastecimentoRepository {
           }
 
           resolve(result.map((item) => AbastecimentoMapper.toTotalPatrimonyDomain(item)));
+        }
+      );
+    });
+  }
+
+  findTotalFuelBySafra({ idSafra, idTalhao, startDate, endDate }: FindTotalBySafraArgs) {
+    return new Promise<TotalBySafraDomain[]>((resolve, reject) => {
+      const query = `
+      select
+        produto_almoxarifado.nome as insumo,
+        cast(sum(abastecimento_ciclo_ts.valor) as numeric(15,2)) as total,
+        cast(sum(
+          (cast(abastecimento_ciclo_ts.proporcao as numeric(15,8)) / 100) *
+          (abastecimento.quantidade)
+        ) as numeric(15,2)) as quantidade
+      from abastecimento_ciclo_ts
+      left join abastecimento_ciclo on abastecimento_ciclo.id = abastecimento_ciclo_ts.id_abastecimento_ciclo
+      left join abastecimento on abastecimento.id = abastecimento_ciclo.id_abastecimento
+      left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
+      where abastecimento.status_processamento = 2
+      and abastecimento_ciclo.id_ciclo_producao = ${idSafra}
+      ${idTalhao ? `and abastecimento_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
+      ${startDate ? `and abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+      ${endDate ? `and abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
+      group by insumo
+      `;
+
+      database.query(
+        query, [],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          }
+
+          resolve(result.map((item) => AbastecimentoMapper.toTotalBySafraDomain(item)));
         }
       );
     });

@@ -19,6 +19,10 @@ import AbastecimentoController from './app/controllers/AbastecimentoController';
 
 import updateDatabaseName from './app/middlewares/updateDatabaseName';
 import ColheitaController from './app/controllers/ColheitaController';
+import TalhaoController from './app/controllers/TalhaoController';
+import CustoProducaoController from './app/controllers/CustoProducaoController';
+import AtividadeAgricolaController from './app/controllers/AtividadeAgricolaController';
+import ManutencaoController from './app/controllers/ManutencaoController';
 
 const router = Router();
 
@@ -30,6 +34,7 @@ router.get('/financeiro/cartao/total', CartaoController.total);
 router.get('/financeiro/fluxo-caixa', FinanceiroController.cashFlow);
 
 router.get('/safras', SafraController.index);
+router.get('/talhoes/:idSafra', TalhaoController.index);
 router.get('/patrimonios', PatrimonioController.index);
 router.get('/combustiveis', CombustivelController.index);
 router.get('/almoxarifados', AlmoxarifadoController.index);
@@ -48,8 +53,16 @@ router.get('/abastecimento/resumo-mensal', AbastecimentoController.totalMonthly)
 router.get('/abastecimento/resumo-combustivel', AbastecimentoController.totalFuel);
 router.get('/abastecimento/resumo-patrimonio', AbastecimentoController.totalPatrimony);
 router.get('/abastecimento/detalhes', AbastecimentoController.description);
+router.get('/abastecimento/custo-producao', AbastecimentoController.totalFuelBySafra);
+
+router.get('/atividade-agricola/custo-producao', AtividadeAgricolaController.totalInputsBySafra);
+
+router.get('/manutencao/custo-producao', ManutencaoController.totalInputsBySafra);
 
 router.get('/colheita/total', ColheitaController.total);
+router.get('/colheita/desconto', ColheitaController.descontoTotal);
+
+router.get('/custo-producao/categoria', CustoProducaoController.totalCategory);
 
 router.get('/usuario/:id/permissoes', updateDatabaseName, UsuarioController.permissions);
 
