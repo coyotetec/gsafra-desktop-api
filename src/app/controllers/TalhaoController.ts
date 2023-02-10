@@ -3,14 +3,13 @@ import TalhaoRepository from '../repositories/TalhaoRepository';
 
 class TalhaoController {
   async index(request: Request, response: Response) {
-    const {idSafra} = request.params;
+    const { idSafra } = request.params;
 
     if (!idSafra) {
       return response.status(400).json({ message: 'Id safra obrigatório' });
     }
 
-    const parsedIdSafra = Number(idSafra);
-    const talhoes = await TalhaoRepository.findAll(parsedIdSafra);
+    const talhoes = await TalhaoRepository.findAll(idSafra);
 
     response.json(talhoes);
   }

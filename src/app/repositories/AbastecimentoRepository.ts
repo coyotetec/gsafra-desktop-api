@@ -23,7 +23,7 @@ interface FindTotalQtyArgs {
 }
 
 interface FindTotalBySafraArgs {
-  idSafra: number;
+  idSafra: string;
   idTalhao?: number;
   startDate?: Date;
   endDate?: Date;
@@ -325,17 +325,19 @@ class AbastecimentoRepository {
         cast(sum(
           (cast(abastecimento_ciclo_ts.proporcao as numeric(15,8)) / 100) *
           (abastecimento.quantidade)
-        ) as numeric(15,2)) as quantidade
+        ) as numeric(15,2)) as quantidade,
+        'Lt' as unidade
       from abastecimento_ciclo_ts
       left join abastecimento_ciclo on abastecimento_ciclo.id = abastecimento_ciclo_ts.id_abastecimento_ciclo
       left join abastecimento on abastecimento.id = abastecimento_ciclo.id_abastecimento
       left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
       where abastecimento.status_processamento = 2
-      and abastecimento_ciclo.id_ciclo_producao = ${idSafra}
+      and abastecimento_ciclo.id_ciclo_producao in (${idSafra})
       ${idTalhao ? `and abastecimento_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
       ${startDate ? `and abastecimento.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `and abastecimento.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
-      group by insumo
+      group by insumo, unidade
+      order by total desc
       `;
 
       database.query(

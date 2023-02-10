@@ -1,11 +1,13 @@
 export interface TalhaoPersistence {
   ID: number;
-  NOME_TALHAO: string;
-  NOME_VARIEDADE: string;
+  TALHAO: string;
+  VARIEDADE: string;
+  SAFRA: string;
 }
 
 export interface TalhaoDomain {
   id: number;
-  nomeTalhao: string;
-  nomeVariedade: string
+  talhao: string;
+  variedade: string;
+  safra: string;
 }

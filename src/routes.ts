@@ -63,6 +63,7 @@ router.get('/colheita/total', ColheitaController.total);
 router.get('/colheita/desconto', ColheitaController.descontoTotal);
 
 router.get('/custo-producao/categoria', CustoProducaoController.totalCategory);
+router.get('/custo-producao/talhao', CustoProducaoController.totalTalhao);
 
 router.get('/usuario/:id/permissoes', updateDatabaseName, UsuarioController.permissions);
 

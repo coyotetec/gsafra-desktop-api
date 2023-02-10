@@ -4,8 +4,9 @@ class TalhaoMapper {
   toDomain(persistence: TalhaoPersistence): TalhaoDomain {
     return {
       id: persistence.ID,
-      nomeTalhao: persistence.NOME_TALHAO,
-      nomeVariedade: persistence.NOME_VARIEDADE
+      talhao: persistence.TALHAO,
+      variedade: persistence.VARIEDADE,
+      safra: persistence.SAFRA
     };
   }
 }

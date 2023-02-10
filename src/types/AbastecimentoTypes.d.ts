@@ -61,10 +61,12 @@ export interface TotalBySafraPersistence {
   INSUMO: string;
   TOTAL: number;
   QUANTIDADE: number;
+  UNIDADE: string;
 }
 
 export interface TotalBySafraDomain {
   insumo: string;
   total: number;
   quantidade: number;
+  unidade: string;
 }

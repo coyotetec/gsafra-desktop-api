@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { parse } from 'date-fns';
 import AtividadeAgricolaRepository from '../repositories/AtividadeAgricolaRepository';
+import TalhaoRepository from '../repositories/TalhaoRepository';
 
 class AtividadeAgricolaController {
   async totalInputsBySafra(request: Request, response: Response) {
@@ -15,7 +16,6 @@ class AtividadeAgricolaController {
       return response.status(400).json({ message: 'Id safra é obrigatório' });
     }
 
-    const parsedIdSafra = Number(idSafra);
     const parsedIdTalhao = idTalhao ? Number(idTalhao) : undefined;
     const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
     const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
@@ -24,16 +24,26 @@ class AtividadeAgricolaController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const inputsTotal = await AtividadeAgricolaRepository.findInputsBySafra({
-      idSafra: parsedIdSafra,
+    const inputsTotalData = await AtividadeAgricolaRepository.findInputsBySafra({
+      idSafra,
       idTalhao: parsedIdTalhao,
       startDate: parsedStartDate,
       endDate: parsedEndDate,
     });
-    const inputsTotalSafra = inputsTotal.reduce((acc, curr) => acc + curr.total, 0);
-    const inputsTotalQtySafra = inputsTotal.reduce((acc, curr) => acc + curr.quantidade, 0);
+    const totalArea = await TalhaoRepository.findArea(idSafra, parsedIdTalhao);
+    const inputsTotalSafra = inputsTotalData.reduce((acc, curr) => acc + curr.total, 0);
+    const inputsTotalPorHectareSafra = Number((inputsTotalSafra / totalArea).toFixed(2));
+    const inputsTotal = inputsTotalData.map((item) => ({
+      insumo: item.insumo,
+      total: item.total,
+      quantidade: item.quantidade,
+      porcentagem: Number(((item.total * 100) / inputsTotalSafra).toFixed(2)),
+      totalPorHectare: Number((item.total / totalArea).toFixed(2)),
+      quantidadePorHectare: Number((item.quantidade / totalArea).toFixed(2)),
+      unidade: item.unidade,
+    }));
 
-    response.json({ inputsTotalSafra, inputsTotalQtySafra, inputsTotal });
+    response.json({ inputsTotalSafra, inputsTotalPorHectareSafra, inputsTotal });
   }
 }
 

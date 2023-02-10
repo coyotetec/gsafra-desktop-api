@@ -53,7 +53,8 @@ class AbastecimentoMapper {
     return {
       insumo: persistence.INSUMO,
       total: persistence.TOTAL,
-      quantidade: persistence.QUANTIDADE
+      quantidade: persistence.QUANTIDADE,
+      unidade: persistence.UNIDADE.trim(),
     };
   }
 }
