@@ -323,7 +323,7 @@ class AbastecimentoRepository {
         produto_almoxarifado.nome as insumo,
         cast(sum(abastecimento_ciclo_ts.valor) as numeric(15,2)) as total,
         cast(sum(
-          (cast(abastecimento_ciclo_ts.proporcao as numeric(15,8)) / 100) *
+          (cast(abastecimento_ciclo_ts.proporcao as numeric(15,5)) / 100) *
           (abastecimento.quantidade)
         ) as numeric(15,2)) as quantidade,
         'Lt' as unidade

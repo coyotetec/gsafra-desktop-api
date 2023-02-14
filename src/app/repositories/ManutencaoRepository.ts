@@ -18,11 +18,11 @@ class ManutencaoRepository {
         select
           produto_almoxarifado.nome as insumo,
           cast(sum(
-            (cast(manutencao_m_ciclo_ts.proporcao as numeric(15,8)) / 100) *
+            (cast(manutencao_m_ciclo_ts.proporcao as numeric(15,5)) / 100) *
             (manutencao_servico_produto.total)
           ) as numeric(15,2)) as total,
           cast(sum(
-            (cast(manutencao_m_ciclo_ts.proporcao as numeric(15,8)) / 100) *
+            (cast(manutencao_m_ciclo_ts.proporcao as numeric(15,5)) / 100) *
             (manutencao_servico_produto.qtde)
           ) as numeric(15,2)) as quantidade,
           unidade.sigla as unidade

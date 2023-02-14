@@ -75,7 +75,7 @@ union
 
 select
     coalesce(cast(sum(
-        (cast(agri_atv_talhao_safra.proporcao as numeric(15,8)) / 100) *
+        (cast(agri_atv_talhao_safra.proporcao as numeric(15,5)) / 100) *
         (
             select sum(agri_atv_insumo.qtde * agri_atv_insumo.custo_medio)
             from agri_atv_insumo
@@ -195,7 +195,7 @@ from(
 
   select
     sum(
-      (cast(agri_atv_talhao_safra.proporcao as numeric(15,8)) / 100) *
+      (cast(agri_atv_talhao_safra.proporcao as numeric(15,5)) / 100) *
       (
         select sum(agri_atv_insumo.qtde * agri_atv_insumo.custo_medio)
         from agri_atv_insumo

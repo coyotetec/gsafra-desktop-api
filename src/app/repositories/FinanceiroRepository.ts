@@ -72,7 +72,7 @@ class FinanceiroRepository {
             conta_receber_pagar.total_desconto
           ) *
           ((crp_apropriacao.valor * 100) / conta_receber_pagar.valor_parcela) / 100 *
-          (CAST(conta_receber_pagar_ciclo.proporcao as NUMERIC(15,8)) / 100)
+          (CAST(conta_receber_pagar_ciclo.proporcao as NUMERIC(15,5)) / 100)
         ) AS NUMERIC(15,2)) AS total
         FROM conta_receber_pagar_ciclo
         LEFT JOIN crp_apropriacao ON crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
