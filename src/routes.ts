@@ -16,8 +16,6 @@ import CombustivelController from './app/controllers/CombustivelController';
 import AlmoxarifadoController from './app/controllers/AlmoxarifadoController';
 import TipoPatrimonioController from './app/controllers/TipoPatrimonioController';
 import AbastecimentoController from './app/controllers/AbastecimentoController';
-
-import updateDatabaseName from './app/middlewares/updateDatabaseName';
 import ColheitaController from './app/controllers/ColheitaController';
 import TalhaoController from './app/controllers/TalhaoController';
 import CustoProducaoController from './app/controllers/CustoProducaoController';
@@ -65,6 +63,6 @@ router.get('/colheita/desconto', ColheitaController.descontoTotal);
 router.get('/custo-producao/categoria', CustoProducaoController.totalCategory);
 router.get('/custo-producao/talhao', CustoProducaoController.totalTalhao);
 
-router.get('/usuario/:id/permissoes', updateDatabaseName, UsuarioController.permissions);
+router.get('/usuario/:id/permissoes', UsuarioController.permissions);
 
 export default router;

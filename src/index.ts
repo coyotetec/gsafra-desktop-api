@@ -4,12 +4,14 @@ import errorHandler from './app/middlewares/errorHandler';
 import 'express-async-errors';
 
 import routes from './routes';
+import updateDatabaseName from './app/middlewares/updateDatabaseName';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors);
+app.use(updateDatabaseName);
 app.use(routes);
 app.use(errorHandler);
 
