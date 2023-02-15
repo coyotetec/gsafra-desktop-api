@@ -15,8 +15,8 @@ inner join abastecimento on abastecimento.id = abastecimento_ciclo.id_abastecime
 where abastecimento.status_processamento = 2
 and abastecimento_ciclo.id_ciclo_producao in (${idSafra})
 ${idTalhao ? `and abastecimento_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
-${startDate ? `and abastecimento.data >= ${startDate}` : ''}
-${endDate ? `and abastecimento.data <= ${endDate}` :  ''}
+${startDate ? `and abastecimento.data >= '${startDate}'` : ''}
+${endDate ? `and abastecimento.data <= '${endDate}'` :  ''}
 
 union
 
@@ -33,8 +33,8 @@ and movimento_conta_apropriacao.apropriacao_custo = 1
 and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
 ${idTalhao ? `and movimento_conta_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
 and movimento_conta_m.compensado = 'S'
-${startDate ? `and movimento_conta_m.data_compensacao >= ${startDate}` : ''}
-${endDate ? `and movimento_conta_m.data_compensacao <= ${endDate}` : ''}
+${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
+${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 
 union
 
@@ -47,10 +47,11 @@ from (
         'Despesas Patrimônio' as categoria
     from manutencao_m_ciclo_ts
     inner join manutencao_m_ciclo on manutencao_m_ciclo.id = manutencao_m_ciclo_ts.id_manutencao_m_ciclo
+    inner join manutencao_m on manutencao_m.id = manutencao_m_ciclo.id_manutencao_m
     where manutencao_m_ciclo.id_ciclo_producao in (${idSafra})
     ${idTalhao ? `and manutencao_m_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
-    ${startDate ? `and manutencao_m.data >= ${startDate}` : ''}
-    ${endDate ? `and manutencao_m.data <= ${endDate}` : ''}
+    ${startDate ? `and manutencao_m.data >= '${startDate}'` : ''}
+    ${endDate ? `and manutencao_m.data <= '${endDate}'` : ''}
 
     union all
 
@@ -67,8 +68,8 @@ from (
     and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
     ${idTalhao ? `and movimento_conta_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
     and movimento_conta_m.compensado = 'S'
-    ${startDate ? `and movimento_conta_m.data_compensacao >= ${startDate}` : ''}
-    ${endDate ? `and movimento_conta_m.data_compensacao <= ${endDate}` : ''}
+    ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
+    ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 ) group by categoria
 
 union
@@ -87,8 +88,8 @@ from agri_atv_talhao_safra
 inner join agri_atv on agri_atv.id = agri_atv_talhao_safra.id_agri_atv
 where agri_atv.id_ciclo_producao in (${idSafra})
 ${idTalhao ? `and agri_atv_talhao_safra.id_talhao_safra = ${idTalhao}` : ''}
-${startDate ? `and agri_atv.data_inicio >= ${startDate}` : ''}
-${endDate ? `and agri_atv.data_inicio <= ${endDate}` : ''}
+${startDate ? `and agri_atv.data_inicio >= '${startDate}'` : ''}
+${endDate ? `and agri_atv.data_inicio <= '${endDate}'` : ''}
 `;
 
 export const custoPorTalhaoQuery = ({idSafra, idTalhao, startDate, endDate}: custoCategoriaQueryArgs) => `
@@ -115,8 +116,8 @@ from(
   where abastecimento.status_processamento = 2
   and abastecimento_ciclo.id_ciclo_producao in (${idSafra})
   ${idTalhao ? `and abastecimento_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
-  ${startDate ? `and abastecimento.data >= ${startDate}` : ''}
-  ${endDate ? `and abastecimento.data <= ${endDate}` :  ''}
+  ${startDate ? `and abastecimento.data >= '${startDate}'` : ''}
+  ${endDate ? `and abastecimento.data <= '${endDate}'` :  ''}
   group by talhao, variedade, area, safra
 
   union all
@@ -141,8 +142,8 @@ from(
   and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
   ${idTalhao ? `and movimento_conta_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
   and movimento_conta_m.compensado = 'S'
-  ${startDate ? `and movimento_conta_m.data_compensacao >= ${startDate}` : ''}
-  ${endDate ? `and movimento_conta_m.data_compensacao <= ${endDate}` : ''}
+  ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
+  ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
   group by talhao, variedade, area, safra
 
   union all
@@ -155,14 +156,15 @@ from(
     ciclo_producao.nome as safra
   from manutencao_m_ciclo_ts
   inner join manutencao_m_ciclo on manutencao_m_ciclo.id = manutencao_m_ciclo_ts.id_manutencao_m_ciclo
+  inner join manutencao_m on manutencao_m.id = manutencao_m_ciclo.id_manutencao_m
   inner join talhao_safra on talhao_safra.id = manutencao_m_ciclo_ts.id_talhao_safra
   inner join talhao on talhao.id = talhao_safra.id_talhao
   inner join variedade on variedade.id = talhao_safra.id_variedade
   inner join ciclo_producao on ciclo_producao.id = talhao_safra.id_ciclo_producao
   where manutencao_m_ciclo.id_ciclo_producao in (${idSafra})
   ${idTalhao ? `and manutencao_m_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
-  ${startDate ? `and manutencao_m.data >= ${startDate}` : ''}
-  ${endDate ? `and manutencao_m.data <= ${endDate}` : ''}
+  ${startDate ? `and manutencao_m.data >= '${startDate}'` : ''}
+  ${endDate ? `and manutencao_m.data <= '${endDate}'` : ''}
   group by talhao, variedade, area, safra
 
   union all
@@ -187,8 +189,8 @@ from(
   and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
   ${idTalhao ? `and movimento_conta_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
   and movimento_conta_m.compensado = 'S'
-  ${startDate ? `and movimento_conta_m.data_compensacao >= ${startDate}` : ''}
-  ${endDate ? `and movimento_conta_m.data_compensacao <= ${endDate}` : ''}
+  ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
+  ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
   group by talhao, variedade, area, safra
 
   union all
@@ -214,8 +216,8 @@ from(
   inner join ciclo_producao on ciclo_producao.id = talhao_safra.id_ciclo_producao
   where agri_atv.id_ciclo_producao in (${idSafra})
   ${idTalhao ? `and agri_atv_talhao_safra.id_talhao_safra = ${idTalhao}` : ''}
-  ${startDate ? `and agri_atv.data_inicio >= ${startDate}` : ''}
-  ${endDate ? `and agri_atv.data_inicio <= ${endDate}` : ''}
+  ${startDate ? `and agri_atv.data_inicio >= '${startDate}'` : ''}
+  ${endDate ? `and agri_atv.data_inicio <= '${endDate}'` : ''}
   group by talhao, variedade, area, safra
 ) group by talhao, variedade, area, safra
 order by total desc
