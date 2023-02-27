@@ -21,6 +21,8 @@ import TalhaoController from './app/controllers/TalhaoController';
 import CustoProducaoController from './app/controllers/CustoProducaoController';
 import AtividadeAgricolaController from './app/controllers/AtividadeAgricolaController';
 import ManutencaoController from './app/controllers/ManutencaoController';
+import ContratoController from './app/controllers/ContratoController';
+import VendaController from './app/controllers/VendaController';
 
 const router = Router();
 
@@ -62,6 +64,14 @@ router.get('/colheita/desconto', ColheitaController.descontoTotal);
 
 router.get('/custo-producao/categoria', CustoProducaoController.totalCategory);
 router.get('/custo-producao/talhao', CustoProducaoController.totalTalhao);
+
+router.get('/contrato', ContratoController.index);
+router.get('/contrato/:id/romaneios', ContratoController.romaneios);
+
+router.get('/venda', VendaController.index);
+router.get('/venda/romaneios', VendaController.romaneio);
+router.get('/venda/media-cliente', VendaController.mediaCliente);
+router.get('/venda/media-mes', VendaController.mediaMes);
 
 router.get('/usuario/:id/permissoes', UsuarioController.permissions);
 

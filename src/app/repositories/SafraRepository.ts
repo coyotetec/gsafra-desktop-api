@@ -8,8 +8,9 @@ class SafraRepository {
     return new Promise<SafraDomain[]>((resolve, reject) => {
       database.query(
         `
-        SELECT * FROM ciclo_producao
-        WHERE status = 1
+        select * from ciclo_producao
+        where status = 1
+        order by nome
         `, [],
         (err, result) => {
           if (err) {
