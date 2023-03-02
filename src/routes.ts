@@ -23,6 +23,10 @@ import AtividadeAgricolaController from './app/controllers/AtividadeAgricolaCont
 import ManutencaoController from './app/controllers/ManutencaoController';
 import ContratoController from './app/controllers/ContratoController';
 import VendaController from './app/controllers/VendaController';
+import CulturaController from './app/controllers/CulturaController';
+import PessoaController from './app/controllers/PessoaController';
+import AgriLocalController from './app/controllers/AgriLocalController';
+import EstoqueGraosController from './app/controllers/EstoqueGraosController';
 
 const router = Router();
 
@@ -33,8 +37,11 @@ router.get('/financeiro/cheque/receber/total', ChequeReceberController.total);
 router.get('/financeiro/cartao/total', CartaoController.total);
 router.get('/financeiro/fluxo-caixa', FinanceiroController.cashFlow);
 
+router.get('/culturas', CulturaController.index);
 router.get('/safras', SafraController.index);
 router.get('/talhoes/:idSafra', TalhaoController.index);
+router.get('/locais-armazenamento', AgriLocalController.index);
+router.get('/produtores', PessoaController.indexProdutor);
 router.get('/patrimonios', PatrimonioController.index);
 router.get('/combustiveis', CombustivelController.index);
 router.get('/almoxarifados', AlmoxarifadoController.index);
@@ -72,6 +79,9 @@ router.get('/venda', VendaController.index);
 router.get('/venda/romaneios', VendaController.romaneio);
 router.get('/venda/media-cliente', VendaController.mediaCliente);
 router.get('/venda/media-mes', VendaController.mediaMes);
+
+router.get('/estoque-graos/total', EstoqueGraosController.total);
+router.get('/estoque-graos/produtor', EstoqueGraosController.totalProdutor);
 
 router.get('/usuario/:id/permissoes', UsuarioController.permissions);
 
