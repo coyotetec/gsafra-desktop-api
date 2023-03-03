@@ -75,7 +75,7 @@ class EstoqueGraosRepository {
         ${startDate ? `and venda_agricultura_saida.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and venda_agricultura_saida.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
-        ${idArmazenamento ? `and venda_agricultura_item.id_estoque_agri_local = ${idArmazenamento}` : ''}
+        ${idArmazenamento ? `and venda_agricultura_saida.id_estoque_agri_local = ${idArmazenamento}` : ''}
         ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
         `, [],
         (err, [result]) => {
@@ -114,7 +114,7 @@ class EstoqueGraosRepository {
           where venda_agricultura_item.id_cultura = ${idCultura}
           ${startDate ? `and venda_agricultura_saida.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
-          ${idArmazenamento ? `and venda_agricultura_item.id_estoque_agri_local = ${idArmazenamento}` : ''}
+          ${idArmazenamento ? `and venda_agricultura_saida.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
 
           union all
@@ -207,7 +207,7 @@ class EstoqueGraosRepository {
         ${startDate ? `and venda_agricultura_saida.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and venda_agricultura_saida.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
-        ${idArmazenamento ? `and venda_agricultura_item.id_estoque_agri_local = ${idArmazenamento}` : ''}
+        ${idArmazenamento ? `and venda_agricultura_saida.id_estoque_agri_local = ${idArmazenamento}` : ''}
         ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
         group by id_produtor, produtor
         order by id_produtor
@@ -255,7 +255,7 @@ class EstoqueGraosRepository {
           where venda_agricultura_item.id_cultura = ${idCultura}
           ${startDate ? `and venda_agricultura_saida.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
-          ${idArmazenamento ? `and venda_agricultura_item.id_estoque_agri_local = ${idArmazenamento}` : ''}
+          ${idArmazenamento ? `and venda_agricultura_saida.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
           group by id_produtor, produtor
 
