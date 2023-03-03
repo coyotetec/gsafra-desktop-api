@@ -37,6 +37,10 @@ class EstoqueGraosRepository {
             sum(case when desconto_armazenamento_d.tipo = 1 then desconto_armazenamento_d.desconto_kg end) as taxa_armazenamento,
             sum(case when desconto_armazenamento_d.tipo = 2 then desconto_armazenamento_d.desconto_kg end) as quebra_tecnica
           from desconto_armazenamento_d
+          inner join desconto_armazenamento_m on desconto_armazenamento_m.id = desconto_armazenamento_d.id_desconto_armazenamento_m
+          where desconto_armazenamento_d.id > 0
+          ${startDate ? `and desconto_armazenamento_m.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+          ${endDate ? `and desconto_armazenamento_m.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
           group by desconto_armazenamento_d.id_colheita
         ) desconto_armazenamento on desconto_armazenamento.id_colheita = colheita.id
         where colheita.id_cultura = ${idCultura}
@@ -95,7 +99,7 @@ class EstoqueGraosRepository {
             sum(colheita.peso_liquido) as total
           from colheita
           where colheita.id_cultura = ${idCultura}
-          ${startDate ? `and colheita.data <= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+          ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and colheita.id_ciclo_producao = ${idSafra}` : ''}
@@ -108,7 +112,7 @@ class EstoqueGraosRepository {
           inner join venda_agricultura_item on venda_agricultura_item.id = venda_agricultura_saida.id_venda_agricultura_item
           inner join venda_agricultura on venda_agricultura.id = venda_agricultura_item.id_venda_agricultura
           where venda_agricultura_item.id_cultura = ${idCultura}
-          ${startDate ? `and venda_agricultura_saida.data <= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+          ${startDate ? `and venda_agricultura_saida.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and venda_agricultura_item.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
@@ -118,10 +122,9 @@ class EstoqueGraosRepository {
           select
             sum(desconto_armazenamento_d.desconto_kg) * -1 as total
           from desconto_armazenamento_d
-          inner join desconto_armazenamento_m on desconto_armazenamento_m.id = desconto_armazenamento_d.id_desconto_armazenamento_m
           inner join colheita on colheita.id = desconto_armazenamento_d.id_colheita
           where colheita.id_cultura = ${idCultura}
-          ${startDate ? `and desconto_armazenamento_m.data <= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+          ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and colheita.id_ciclo_producao = ${idSafra}` : ''}
@@ -233,7 +236,7 @@ class EstoqueGraosRepository {
           from colheita
           inner join pessoa on pessoa.id = colheita.id_cliente_silo
           where colheita.id_cultura = ${idCultura}
-          ${startDate ? `and colheita.data <= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+          ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and colheita.id_ciclo_producao = ${idSafra}` : ''}
@@ -250,7 +253,7 @@ class EstoqueGraosRepository {
           inner join venda_agricultura on venda_agricultura.id = venda_agricultura_item.id_venda_agricultura
           inner join pessoa on pessoa.id = venda_agricultura.id_cliente_silo
           where venda_agricultura_item.id_cultura = ${idCultura}
-          ${startDate ? `and venda_agricultura_saida.data <= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+          ${startDate ? `and venda_agricultura_saida.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and venda_agricultura_item.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
@@ -263,11 +266,10 @@ class EstoqueGraosRepository {
             pessoa.razao_social as produtor,
             sum(desconto_armazenamento_d.desconto_kg) * -1 as total
           from desconto_armazenamento_d
-          inner join desconto_armazenamento_m on desconto_armazenamento_m.id = desconto_armazenamento_d.id_desconto_armazenamento_m
           inner join colheita on colheita.id = desconto_armazenamento_d.id_colheita
           inner join pessoa on pessoa.id = colheita.id_cliente_silo
           where colheita.id_cultura = ${idCultura}
-          ${startDate ? `and desconto_armazenamento_m.data <= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
+          ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and colheita.id_ciclo_producao = ${idSafra}` : ''}

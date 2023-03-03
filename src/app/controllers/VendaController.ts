@@ -151,7 +151,6 @@ class VendaController {
       valorTotal: acc.valorTotal + curr.quantidadeTotal,
       quantidadeTotal: acc.quantidadeTotal + curr.quantidadeTotal
     }), { valorTotal: 0, quantidadeTotal: 0 });
-    console.log({mediaSafra});
     const mediaSafraKg = mediaSafra.valorTotal / mediaSafra.quantidadeTotal;
     const mediaSafraSaca = (mediaSafra.valorTotal / mediaSafra.quantidadeTotal) * 60;
 

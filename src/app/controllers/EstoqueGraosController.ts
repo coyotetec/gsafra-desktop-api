@@ -105,11 +105,7 @@ class EstoqueGraosController {
       idSafra: parsedIdSafra
     });
 
-    let saldoAnterior: SaldoProdutorDomain[] = entradas.map(item => ({
-      idProdutor: item.idProdutor,
-      produtor: item.produtor,
-      saldo: 0
-    }));
+    let saldoAnterior: SaldoProdutorDomain[] = [];
 
     if (parsedStartDate) {
       saldoAnterior = await EstoqueGraosRepository.findSaldoAnteriorProdutor({
@@ -121,23 +117,77 @@ class EstoqueGraosController {
       });
     }
 
-    let saldoFinal = saldoAnterior.map((item, index) => ({
+    const estoqueGraosProdutor = [...entradas, ...saidas, ...saldoAnterior].reduce((acc, curr) => {
+      const index = acc.findIndex((t) => (
+        t.idProdutor === curr.idProdutor && t.produtor === curr.produtor
+      ));
+
+      if (index === -1) {
+        const saldoAnteriorProdutor = saldoAnterior.find((t) => (
+          t.idProdutor === curr.idProdutor && t.produtor === curr.produtor
+        ))?.saldo || 0;
+        const entradasProdutor = entradas.find((t) => (
+          t.idProdutor === curr.idProdutor && t.produtor === curr.produtor
+        )) || {
+          idProdutor: curr.idProdutor,
+          produtor: curr.produtor,
+          peso: 0,
+          descontoClassificacao: 0,
+          taxaRecepcao: 0,
+          cotaCapital: 0,
+          taxaArmazenamento: 0,
+          quebraTecnica: 0,
+          pesoLiquido: 0
+        };
+        const saidasProdutor = saidas.find((t) => (
+          t.idProdutor === curr.idProdutor && t.produtor === curr.produtor
+        ))  || {
+          idProdutor: curr.idProdutor,
+          produtor: curr.produtor,
+          peso: 0,
+          descontoClassificacao: 0,
+          pesoLiquido: 0,
+        };
+        const saldoFinal = saldoAnteriorProdutor + entradasProdutor.pesoLiquido - saidasProdutor.pesoLiquido;
+
+        acc.push({
+          idProdutor: curr.idProdutor,
+          produtor: curr.produtor,
+          saldoAnterior: saldoAnteriorProdutor,
+          entradas: entradasProdutor,
+          saidas: saidasProdutor,
+          saldoFinal
+        });
+      }
+
+      return acc;
+    }, [] as {
+      idProdutor: number;
+      produtor: string;
+      saldoAnterior: number;
+      entradas: {
+        peso: number;
+        descontoClassificacao: number;
+        taxaRecepcao: number;
+        cotaCapital: number;
+        taxaArmazenamento: number;
+        quebraTecnica: number;
+        pesoLiquido: number;
+      };
+      saidas: {
+        peso: number;
+        descontoClassificacao: number;
+        pesoLiquido: number;
+      };
+      saldoFinal: number;
+    }[]);
+
+    const saldoFinal = estoqueGraosProdutor.map((item) => ({
       idProdutor: item.idProdutor,
       produtor: item.produtor,
-      saldo: item.saldo + (entradas[index]?.pesoLiquido || 0) - (saidas[index]?.pesoLiquido || 0),
-      saldoSacas: (item.saldo + (entradas[index]?.pesoLiquido || 0) - (saidas[index]?.pesoLiquido || 0)) / 60
-    }));
-
-    const estoqueGraosProdutor = saldoAnterior.map((item, index) => ({
-      idProdutor: item.idProdutor,
-      produtor: item.produtor,
-      saldoAnterior: item.saldo,
-      entradas: entradas[index],
-      saidas: saidas[index],
-      saldoFinal: saldoFinal[index].saldo
-    }));
-
-    saldoFinal = saldoFinal.sort((a, b) => b.saldo - a.saldo);
+      saldo: item.saldoFinal,
+      saldoSacas: item.saldoFinal / 60
+    })).sort((a, b) => b.saldo - a.saldo);
 
     response.json({ estoqueGraosProdutor, saldoFinal });
   }
