@@ -46,7 +46,7 @@ class AbastecimentoRepository {
         extract(month from abastecimento.data) as mes,
         extract(year from abastecimento.data) as ano
       from abastecimento
-      left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
+      ${idTipoPatrimonio ? 'inner join patrimonio on patrimonio.id = abastecimento.id_patrimonio' : ''}
       where abastecimento.estoque_movimentado = 1
       ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
       ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
@@ -86,7 +86,7 @@ class AbastecimentoRepository {
         extract(month from abastecimento.data) as mes,
         extract(year from abastecimento.data) as ano
       from abastecimento
-      left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
+      ${idTipoPatrimonio ? 'inner join patrimonio on patrimonio.id = abastecimento.id_patrimonio' : ''}
       where abastecimento.estoque_movimentado = 1
       ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
       ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
@@ -135,9 +135,9 @@ class AbastecimentoRepository {
         ${custo === 'atual' ? 'abastecimento.custo_atual' : 'abastecimento.custo_medio'} as custo_individual,
         ${custo === 'atual' ? 'abastecimento.total_atual' : 'abastecimento.total_medio'} as total
       from abastecimento
-      left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
-      left join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
-      left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
+      inner join patrimonio on patrimonio.id = abastecimento.id_patrimonio
+      inner join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
+      inner join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
       left join almoxarifado on almoxarifado.id = abastecimento.id_almoxarifado
       where abastecimento.estoque_movimentado = 1
       ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
@@ -177,8 +177,8 @@ class AbastecimentoRepository {
         ${custo === 'atual' ? 'sum(abastecimento.total_atual)' : 'sum(abastecimento.total_medio)'} as total,
         produto_almoxarifado.nome as combustivel
       from abastecimento
-      left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
-      left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
+      inner join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
+      ${idTipoPatrimonio ? 'inner join patrimonio on patrimonio.id = abastecimento.id_patrimonio' : ''}
       where abastecimento.estoque_movimentado = 1
       ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
       ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
@@ -216,8 +216,8 @@ class AbastecimentoRepository {
         sum(abastecimento.quantidade) as total,
         produto_almoxarifado.nome as combustivel
       from abastecimento
-      left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
-      left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
+      inner join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
+      ${idTipoPatrimonio ? 'inner join patrimonio on patrimonio.id = abastecimento.id_patrimonio' : ''}
       where abastecimento.estoque_movimentado = 1
       ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
       ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
@@ -255,8 +255,8 @@ class AbastecimentoRepository {
         ${custo === 'atual' ? 'sum(abastecimento.total_atual)' : 'sum(abastecimento.total_medio)'} as total,
         tipo_patrimonio.nome as tipo_patrimonio
       from abastecimento
-      left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
-      left join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
+      inner join patrimonio on patrimonio.id = abastecimento.id_patrimonio
+      inner join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
       where abastecimento.estoque_movimentado = 1
       ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
       ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
@@ -292,8 +292,8 @@ class AbastecimentoRepository {
         sum(abastecimento.quantidade) as total,
         tipo_patrimonio.nome as tipo_patrimonio
       from abastecimento
-      left join patrimonio on patrimonio.id = abastecimento.id_patrimonio
-      left join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
+      inner join patrimonio on patrimonio.id = abastecimento.id_patrimonio
+      inner join tipo_patrimonio on tipo_patrimonio.id = patrimonio.id_tipo_patrimonio
       where abastecimento.estoque_movimentado = 1
       ${idPatrimonio ? `and abastecimento.id_patrimonio = ${idPatrimonio}` : ''}
       ${idProdutoAlmoxarifado ? `and abastecimento.id_produto_almoxarifado = ${idProdutoAlmoxarifado}` : ''}
@@ -328,9 +328,9 @@ class AbastecimentoRepository {
         ) as numeric(15,2)) as quantidade,
         'Lt' as unidade
       from abastecimento_ciclo_ts
-      left join abastecimento_ciclo on abastecimento_ciclo.id = abastecimento_ciclo_ts.id_abastecimento_ciclo
-      left join abastecimento on abastecimento.id = abastecimento_ciclo.id_abastecimento
-      left join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
+      inner join abastecimento_ciclo on abastecimento_ciclo.id = abastecimento_ciclo_ts.id_abastecimento_ciclo
+      inner join abastecimento on abastecimento.id = abastecimento_ciclo.id_abastecimento
+      inner join produto_almoxarifado on produto_almoxarifado.id = abastecimento.id_produto_almoxarifado
       where abastecimento.status_processamento = 2
       and abastecimento_ciclo.id_ciclo_producao in (${idSafra})
       ${idTalhao ? `and abastecimento_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}

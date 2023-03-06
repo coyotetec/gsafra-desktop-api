@@ -48,8 +48,8 @@ class ChequeRepository {
           ) AS NUMERIC(15,2)
         ) AS total
         FROM cheque_ciclo
-        LEFT JOIN cheque_apropriacao ON cheque_apropriacao.id = cheque_ciclo.id_cheque_apropriacao
-        LEFT JOIN cheque ON cheque.id = cheque_apropriacao.id_cheque
+        INNER JOIN cheque_apropriacao ON cheque_apropriacao.id = cheque_ciclo.id_cheque_apropriacao
+        INNER JOIN cheque ON cheque.id = cheque_apropriacao.id_cheque
         WHERE cheque.tipo = ? AND cheque.situacao = 'A'
         AND cheque_ciclo.id_ciclo_producao = ?
         ${period !== 0 ? `

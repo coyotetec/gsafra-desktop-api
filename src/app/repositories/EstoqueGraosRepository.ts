@@ -44,6 +44,7 @@ class EstoqueGraosRepository {
           group by desconto_armazenamento_d.id_colheita
         ) desconto_armazenamento on desconto_armazenamento.id_colheita = colheita.id
         where colheita.id_cultura = ${idCultura}
+        and colheita.situacao = 2
         ${startDate ? `and colheita.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and colheita.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
@@ -72,6 +73,7 @@ class EstoqueGraosRepository {
         inner join venda_agricultura_item on venda_agricultura_item.id = venda_agricultura_saida.id_venda_agricultura_item
         inner join venda_agricultura on venda_agricultura.id = venda_agricultura_item.id_venda_agricultura
         where venda_agricultura_item.id_cultura = ${idCultura}
+        and venda_agricultura_saida.situacao = 2
         ${startDate ? `and venda_agricultura_saida.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and venda_agricultura_saida.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}

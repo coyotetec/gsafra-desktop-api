@@ -54,8 +54,8 @@ class CartaoRepository {
           ) AS NUMERIC(15,2)
         ) AS total
         FROM cartao_pagar_d_ciclo
-        LEFT JOIN cartao_pagar_d_apropriacao ON cartao_pagar_d_apropriacao.id = cartao_pagar_d_ciclo.id_cartao_pagar_d_apropriacao
-        LEFT JOIN cartao_pagar_d ON cartao_pagar_d.id = cartao_pagar_d_apropriacao.id_cartao_pagar_d
+        INNER JOIN cartao_pagar_d_apropriacao ON cartao_pagar_d_apropriacao.id = cartao_pagar_d_ciclo.id_cartao_pagar_d_apropriacao
+        INNER JOIN cartao_pagar_d ON cartao_pagar_d.id = cartao_pagar_d_apropriacao.id_cartao_pagar_d
         WHERE cartao_pagar_d.situacao = 0
         ${startDate ? `AND cartao_pagar_d.vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `AND cartao_pagar_d.vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}

@@ -27,10 +27,10 @@ class AtividadeAgricolaRepository {
           ) as numeric(15,2)) as quantidade,
           unidade.sigla as unidade
         from agri_atv_insumo
-        left join agri_atv on agri_atv.id = agri_atv_insumo.id_agri_atv
-        left join agri_atv_talhao_safra on agri_atv_talhao_safra.id_agri_atv = agri_atv.id
-        left join produto_almoxarifado on produto_almoxarifado.id = agri_atv_insumo.id_produto_almoxarifado
-        left join unidade on unidade.id = agri_atv_insumo.id_unidade
+        inner join agri_atv on agri_atv.id = agri_atv_insumo.id_agri_atv
+        inner join agri_atv_talhao_safra on agri_atv_talhao_safra.id_agri_atv = agri_atv.id
+        inner join produto_almoxarifado on produto_almoxarifado.id = agri_atv_insumo.id_produto_almoxarifado
+        inner join unidade on unidade.id = agri_atv_insumo.id_unidade
         where agri_atv.id_ciclo_producao in (${idSafra})
         ${idTalhao ? `and agri_atv_talhao_safra.id_talhao_safra = ${idTalhao}` : ''}
         ${startDate ? `and agri_atv.data_inicio >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}

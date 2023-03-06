@@ -20,7 +20,7 @@ class ColheitaRepository {
           talhao.descricao as talhao,
           talhao_safra.hectares as tamanho_talhao
         from colheita_talhao
-        left join colheita on colheita.id = colheita_talhao.id_colheita
+        inner join colheita on colheita.id = colheita_talhao.id_colheita
         right join talhao_safra on talhao_safra.id = colheita_talhao.id_talhao_safra
         right join talhao on talhao.id = talhao_safra.id_talhao
         where talhao_safra.id_ciclo_producao = ${idSafra}
@@ -73,9 +73,9 @@ class ColheitaRepository {
           ` : ''}
           talhao.descricao as talhao
         from colheita_talhao
-        left join colheita on colheita.id = colheita_talhao.id_colheita
-        right join talhao_safra on talhao_safra.id = colheita_talhao.id_talhao_safra
-        right join talhao on talhao.id = talhao_safra.id_talhao
+        inner join colheita on colheita.id = colheita_talhao.id_colheita
+        inner join talhao_safra on talhao_safra.id = colheita_talhao.id_talhao_safra
+        inner join talhao on talhao.id = talhao_safra.id_talhao
         where talhao_safra.id_ciclo_producao = ${idSafra}
         group by talhao
         `, [],
