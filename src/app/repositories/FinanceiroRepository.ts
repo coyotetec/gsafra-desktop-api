@@ -48,7 +48,7 @@ class FinanceiroRepository {
         conta_receber_pagar.total_desconto
       ) AS total
       FROM conta_receber_pagar
-      LEFT JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
+      INNER JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
       WHERE crp_m.tipo = ? AND conta_receber_pagar.situacao = 'A'
       ${period !== 0 ? `
       ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
@@ -75,9 +75,9 @@ class FinanceiroRepository {
           (CAST(conta_receber_pagar_ciclo.proporcao as NUMERIC(15,5)) / 100)
         ) AS NUMERIC(15,2)) AS total
         FROM conta_receber_pagar_ciclo
-        LEFT JOIN crp_apropriacao ON crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
-        LEFT JOIN conta_receber_pagar ON conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
-        LEFT JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
+        INNER JOIN crp_apropriacao ON crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
+        INNER JOIN conta_receber_pagar ON conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
+        INNER JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
         WHERE crp_m.tipo = ? AND conta_receber_pagar.situacao = 'A'
         AND conta_receber_pagar_ciclo.id_ciclo_producao = ?
         ${period !== 0 ? `

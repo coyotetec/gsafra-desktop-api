@@ -101,6 +101,7 @@ class EstoqueGraosRepository {
             sum(colheita.peso_liquido) as total
           from colheita
           where colheita.id_cultura = ${idCultura}
+          and colheita.situacao = 2
           ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
@@ -114,6 +115,7 @@ class EstoqueGraosRepository {
           inner join venda_agricultura_item on venda_agricultura_item.id = venda_agricultura_saida.id_venda_agricultura_item
           inner join venda_agricultura on venda_agricultura.id = venda_agricultura_item.id_venda_agricultura
           where venda_agricultura_item.id_cultura = ${idCultura}
+          and venda_agricultura_saida.situacao = 2
           ${startDate ? `and venda_agricultura_saida.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and venda_agricultura_saida.id_estoque_agri_local = ${idArmazenamento}` : ''}
@@ -126,6 +128,7 @@ class EstoqueGraosRepository {
           from desconto_armazenamento_d
           inner join colheita on colheita.id = desconto_armazenamento_d.id_colheita
           where colheita.id_cultura = ${idCultura}
+          and colheita.situacao = 2
           ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
@@ -173,6 +176,7 @@ class EstoqueGraosRepository {
           group by desconto_armazenamento_d.id_colheita
         ) desconto_armazenamento on desconto_armazenamento.id_colheita = colheita.id
         where colheita.id_cultura = ${idCultura}
+        and colheita.situacao = 2
         ${startDate ? `and colheita.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and colheita.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
@@ -206,6 +210,7 @@ class EstoqueGraosRepository {
         inner join venda_agricultura on venda_agricultura.id = venda_agricultura_item.id_venda_agricultura
         inner join pessoa on pessoa.id = venda_agricultura.id_cliente_silo
         where venda_agricultura_item.id_cultura = ${idCultura}
+        and venda_agricultura_saida.situacao = 2
         ${startDate ? `and venda_agricultura_saida.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and venda_agricultura_saida.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
@@ -238,6 +243,7 @@ class EstoqueGraosRepository {
           from colheita
           inner join pessoa on pessoa.id = colheita.id_cliente_silo
           where colheita.id_cultura = ${idCultura}
+          and colheita.situacao = 2
           ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
@@ -255,6 +261,7 @@ class EstoqueGraosRepository {
           inner join venda_agricultura on venda_agricultura.id = venda_agricultura_item.id_venda_agricultura
           inner join pessoa on pessoa.id = venda_agricultura.id_cliente_silo
           where venda_agricultura_item.id_cultura = ${idCultura}
+          and venda_agricultura_saida.situacao = 2
           ${startDate ? `and venda_agricultura_saida.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and venda_agricultura_saida.id_estoque_agri_local = ${idArmazenamento}` : ''}
@@ -271,6 +278,7 @@ class EstoqueGraosRepository {
           inner join colheita on colheita.id = desconto_armazenamento_d.id_colheita
           inner join pessoa on pessoa.id = colheita.id_cliente_silo
           where colheita.id_cultura = ${idCultura}
+          and colheita.situacao = 2
           ${startDate ? `and colheita.data < '${format(startDate, 'yyyy-MM-dd')}'` : ''}
           ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
