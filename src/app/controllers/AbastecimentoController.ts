@@ -41,24 +41,25 @@ class AbastecimentoController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const totalValues = await AbastecimentoRepository.findTotalMonthlyValue({
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      idPatrimonio: parsedIdPatrimonio,
-      idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
-      idAlmoxarifado: parsedIdAlmoxarifado,
-      idTipoPatrimonio: parsedIdTipoPatrimonio,
-      custo,
-    });
-
-    const totalQty = await AbastecimentoRepository.findTotalMonthlyQty({
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      idPatrimonio: parsedIdPatrimonio,
-      idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
-      idAlmoxarifado: parsedIdAlmoxarifado,
-      idTipoPatrimonio: parsedIdTipoPatrimonio,
-    });
+    const [totalValues, totalQty] = await Promise.all([
+      AbastecimentoRepository.findTotalMonthlyValue({
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        idPatrimonio: parsedIdPatrimonio,
+        idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
+        idAlmoxarifado: parsedIdAlmoxarifado,
+        idTipoPatrimonio: parsedIdTipoPatrimonio,
+        custo,
+      }),
+      AbastecimentoRepository.findTotalMonthlyQty({
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        idPatrimonio: parsedIdPatrimonio,
+        idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
+        idAlmoxarifado: parsedIdAlmoxarifado,
+        idTipoPatrimonio: parsedIdTipoPatrimonio,
+      })
+    ]);
 
     const monthsValue = eachMonthOfInterval({
       start: parsedStartDate || new Date(totalValues[0].ano, totalValues[0].mes - 1),
@@ -105,24 +106,25 @@ class AbastecimentoController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const fuelValue = await AbastecimentoRepository.findTotalFuelValue({
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      idPatrimonio: parsedIdPatrimonio,
-      idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
-      idAlmoxarifado: parsedIdAlmoxarifado,
-      idTipoPatrimonio: parsedIdTipoPatrimonio,
-      custo,
-    });
-
-    const fuelQty = await AbastecimentoRepository.findTotalFuelQty({
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      idPatrimonio: parsedIdPatrimonio,
-      idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
-      idAlmoxarifado: parsedIdAlmoxarifado,
-      idTipoPatrimonio: parsedIdTipoPatrimonio,
-    });
+    const [fuelValue, fuelQty] = await Promise.all([
+      AbastecimentoRepository.findTotalFuelValue({
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        idPatrimonio: parsedIdPatrimonio,
+        idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
+        idAlmoxarifado: parsedIdAlmoxarifado,
+        idTipoPatrimonio: parsedIdTipoPatrimonio,
+        custo,
+      }),
+      AbastecimentoRepository.findTotalFuelQty({
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        idPatrimonio: parsedIdPatrimonio,
+        idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
+        idAlmoxarifado: parsedIdAlmoxarifado,
+        idTipoPatrimonio: parsedIdTipoPatrimonio,
+      })
+    ]);
 
     const fuelValueTotal = Number(fuelValue.reduce((acc, curr) => acc + curr.total, 0).toFixed(3));
     const fuelQtyTotal = Number(fuelQty.reduce((acc, curr) => acc + curr.total, 0).toFixed(3));
@@ -155,26 +157,26 @@ class AbastecimentoController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const patrimonyValue = await AbastecimentoRepository.findTotalPatrimonyValue({
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      idPatrimonio: parsedIdPatrimonio,
-      idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
-      idAlmoxarifado: parsedIdAlmoxarifado,
-      custo,
-    });
-
-    const patrimonyQty = await AbastecimentoRepository.findTotalPatrimonyQty({
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      idPatrimonio: parsedIdPatrimonio,
-      idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
-      idAlmoxarifado: parsedIdAlmoxarifado,
-    });
+    const [patrimonyValue, patrimonyQty] = await Promise.all([
+      AbastecimentoRepository.findTotalPatrimonyValue({
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        idPatrimonio: parsedIdPatrimonio,
+        idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
+        idAlmoxarifado: parsedIdAlmoxarifado,
+        custo,
+      }),
+      AbastecimentoRepository.findTotalPatrimonyQty({
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        idPatrimonio: parsedIdPatrimonio,
+        idProdutoAlmoxarifado: parsedIdProdutoAlmoxarifado,
+        idAlmoxarifado: parsedIdAlmoxarifado,
+      })
+    ]);
 
     const patrimonyValueTotal = Number(patrimonyValue.reduce((acc, curr) => acc + curr.total, 0).toFixed(3));
     const patrimonyQtyTotal = Number(patrimonyQty.reduce((acc, curr) => acc + curr.total, 0).toFixed(3));
-
 
     return response.json({ patrimonyValue, patrimonyValueTotal, patrimonyQty, patrimonyQtyTotal });
   }
@@ -238,13 +240,16 @@ class AbastecimentoController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const inputsTotalData = await AbastecimentoRepository.findTotalFuelBySafra({
-      idSafra,
-      idTalhao: parsedIdTalhao,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-    });
-    const totalArea = await TalhaoRepository.findArea(idSafra, parsedIdTalhao);
+    const [inputsTotalData, totalArea] = await Promise.all([
+      AbastecimentoRepository.findTotalFuelBySafra({
+        idSafra,
+        idTalhao: parsedIdTalhao,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+      }),
+      TalhaoRepository.findArea(idSafra, parsedIdTalhao)
+    ]);
+
     const inputsTotalSafra = inputsTotalData.reduce((acc, curr) => acc + curr.total, 0);
     const inputsTotalPorHectareSafra = Number((inputsTotalSafra / totalArea).toFixed(2));
     const inputsTotal = inputsTotalData.map((item) => ({

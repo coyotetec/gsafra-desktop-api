@@ -13,9 +13,9 @@ class SafraRepository {
           variedade.nome as variedade,
           ciclo_producao.nome as safra
         from talhao_safra
-        left join talhao on talhao.id = talhao_safra.id_talhao
-        left join variedade on variedade.id = talhao_safra.id_variedade
-        left join ciclo_producao on ciclo_producao.id = talhao_safra.id_ciclo_producao
+        inner join talhao on talhao.id = talhao_safra.id_talhao
+        inner join variedade on variedade.id = talhao_safra.id_variedade
+        inner join ciclo_producao on ciclo_producao.id = talhao_safra.id_ciclo_producao
         where talhao_safra.status = 1
         and talhao_safra.id_ciclo_producao in (${idSafra})
         order by talhao, variedade

@@ -6,7 +6,7 @@ class UsuarioRepository {
       database.query(
         `
         select dashboard_secao.codigo from usuario
-        left join papel on papel.id = usuario.id_papel
+        inner join papel on papel.id = usuario.id_papel
         left join papel_dashboard on papel_dashboard.id_papel = papel.id
         left join dashboard_secao on  dashboard_secao.id = papel_dashboard.id_dashboard_secao
         where usuario.id = ?

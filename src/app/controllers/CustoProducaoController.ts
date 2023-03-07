@@ -24,13 +24,16 @@ class CustoProducaoController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const totalCustoCategoriaData = await CustoProducaoRepository.findCustoCategoria({
-      idSafra,
-      idTalhao: parsedIdTalhao,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-    });
-    const totalArea = await TalhaoRepository.findArea(idSafra, parsedIdTalhao);
+    const [totalCustoCategoriaData, totalArea] = await Promise.all([
+      CustoProducaoRepository.findCustoCategoria({
+        idSafra,
+        idTalhao: parsedIdTalhao,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+      }),
+      TalhaoRepository.findArea(idSafra, parsedIdTalhao)
+    ]);
+
     const totalCusto = totalCustoCategoriaData.reduce((acc, curr) => acc + curr.total, 0);
     const totalCustoPorHectare = Number((totalCusto / totalArea).toFixed(2));
     const totalCustoCategoria = totalCustoCategoriaData.map((item) => ({
@@ -63,13 +66,16 @@ class CustoProducaoController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const totalCustoTalhaoData = await CustoProducaoRepository.findCustoTalhao({
-      idSafra,
-      idTalhao: parsedIdTalhao,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-    });
-    const totalArea = await TalhaoRepository.findArea(idSafra, parsedIdTalhao);
+    const [totalCustoTalhaoData, totalArea] = await Promise.all([
+      CustoProducaoRepository.findCustoTalhao({
+        idSafra,
+        idTalhao: parsedIdTalhao,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+      }),
+      TalhaoRepository.findArea(idSafra, parsedIdTalhao)
+    ]);
+
     const totalCusto = totalCustoTalhaoData.reduce((acc, curr) => acc + curr.total, 0);
     const totalCustoPorHectare = Number((totalCusto / totalArea).toFixed(2));
     const totalCustoTalhao = totalCustoTalhaoData.map((item) => ({

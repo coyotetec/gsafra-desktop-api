@@ -40,7 +40,7 @@ select sum(
   else(movimento_conta_ciclo.valor) end
 ) as total
 from movimento_conta_apropriacao
-left join movimento_conta_ciclo on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
+inner join movimento_conta_ciclo on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
 ` : `
 select sum(
   case when movimento_conta_m.tipo_lancamento = 'D'
@@ -49,8 +49,8 @@ select sum(
 ) as total
 from movimento_conta_apropriacao
 `}
-left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
+inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+inner join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
 where movimento_conta_m.compensado = 'S'
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
@@ -100,7 +100,7 @@ select
     when 6 then 'Outro'
   end as tipo_documento
 from movimento_conta_apropriacao
-left join movimento_conta_ciclo on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
+inner join movimento_conta_ciclo on movimento_conta_ciclo.id_movimento_conta_apropriacao = movimento_conta_apropriacao.id
 ` : `
 select
   movimento_conta_m.data_compensacao as data,
@@ -120,9 +120,9 @@ select
   end as tipo_documento
 from movimento_conta_apropriacao
 `}
-left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
-left join conta on conta.id = movimento_conta_m.id_conta
+inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+inner join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
+inner join conta on conta.id = movimento_conta_m.id_conta
 left join pessoa on pessoa.id = movimento_conta.id_pessoa
 where movimento_conta_m.compensado = 'S'
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}

@@ -66,8 +66,13 @@ class FinanceiroViewController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const viewColumns = await FinanceiroViewRepository.findViewColumns(Number(id));
+    const [viewColumns, totalizadores] = await Promise.all([
+      FinanceiroViewRepository.findViewColumns(Number(id)),
+      FinanceiroViewRepository.findTotalizadores(Number(id))
+    ]);
+
     const viewData = [];
+    const totalizadoresData = [];
 
     for (const viewColumn of viewColumns) {
       const query = viewTotalQuery({
@@ -86,10 +91,6 @@ class FinanceiroViewController {
         visivel: viewColumn.visivel,
       });
     }
-
-    const totalizadores = await FinanceiroViewRepository.findTotalizadores(Number(id));
-
-    const totalizadoresData = [];
 
     for (const totalizador of totalizadores) {
       let formula = totalizador.formula;

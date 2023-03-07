@@ -12,6 +12,7 @@ class ColheitaController {
     const parsedIdSafra = Number(idSafra);
 
     const talhoesTotal = await ColheitaRepository.findTotal(parsedIdSafra);
+
     const totalHectares = talhoesTotal.reduce((acc, curr) => acc + curr.tamanhoTalhao, 0);
     const totalSafra = talhoesTotal.reduce((acc, curr) => acc + curr.total, 0);
     const sacasSafra = Number((totalSafra / 60).toFixed(2));
@@ -38,6 +39,7 @@ class ColheitaController {
     const parsedIdSafra = Number(idSafra);
 
     const talhoesDescontoTotal = await ColheitaRepository.findDescontoTotal(parsedIdSafra, desconto);
+
     const pesoTotalSafra = talhoesDescontoTotal.reduce((acc, curr) => acc + curr.pesoTotal, 0);
     const totalDescontoSafra = talhoesDescontoTotal.reduce((acc, curr) => acc + curr.descontoTotal, 0);
     const porcentagemDescontoSafra = Number(((totalDescontoSafra * 100) / pesoTotalSafra).toFixed(2));

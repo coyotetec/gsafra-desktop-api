@@ -37,20 +37,22 @@ class ChequeReceberController {
     });
 
     if (parsedStartDate) {
-      totalNextSeven = await ChequeRepository.findTotal({
-        tipo: 'receber',
-        period: 7,
-        startDate: parsedStartDate,
-        endDate: parsedEndDate,
-        idSafra: parsedIdSafra,
-      });
-      totalNextFifteen = await ChequeRepository.findTotal({
-        tipo: 'receber',
-        period: 15,
-        startDate: parsedStartDate,
-        endDate: parsedEndDate,
-        idSafra: parsedIdSafra,
-      });
+      [totalNextSeven, totalNextFifteen] = await Promise.all([
+        ChequeRepository.findTotal({
+          tipo: 'receber',
+          period: 7,
+          startDate: parsedStartDate,
+          endDate: parsedEndDate,
+          idSafra: parsedIdSafra,
+        }),
+        ChequeRepository.findTotal({
+          tipo: 'receber',
+          period: 15,
+          startDate: parsedStartDate,
+          endDate: parsedEndDate,
+          idSafra: parsedIdSafra,
+        })
+      ]);
     }
 
     response.json({

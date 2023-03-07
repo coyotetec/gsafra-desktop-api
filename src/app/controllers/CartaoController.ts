@@ -18,14 +18,16 @@ class CartaoController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const total = await CartaoRepository.findTotal({
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      idSafra: parsedIdSafra,
-    });
+    const [total, realTotal, totalLimit] = await Promise.all([
+      CartaoRepository.findTotal({
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        idSafra: parsedIdSafra,
+      }),
+      CartaoRepository.findTotal({}),
+      CartaoRepository.findLimitTotal()
+    ]);
 
-    const realTotal = await CartaoRepository.findTotal({});
-    const totalLimit = await CartaoRepository.findLimitTotal();
     const availableLimit = totalLimit - realTotal.total;
 
     const usagePercentage = Math.round(100 - ((availableLimit * 100) / totalLimit));

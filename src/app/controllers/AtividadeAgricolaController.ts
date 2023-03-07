@@ -24,13 +24,16 @@ class AtividadeAgricolaController {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const inputsTotalData = await AtividadeAgricolaRepository.findInputsBySafra({
-      idSafra,
-      idTalhao: parsedIdTalhao,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-    });
-    const totalArea = await TalhaoRepository.findArea(idSafra, parsedIdTalhao);
+    const [inputsTotalData, totalArea] = await Promise.all([
+      AtividadeAgricolaRepository.findInputsBySafra({
+        idSafra,
+        idTalhao: parsedIdTalhao,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+      }),
+      TalhaoRepository.findArea(idSafra, parsedIdTalhao)
+    ]);
+
     const inputsTotalSafra = inputsTotalData.reduce((acc, curr) => acc + curr.total, 0);
     const inputsTotalPorHectareSafra = Number((inputsTotalSafra / totalArea).toFixed(2));
     const inputsTotal = inputsTotalData.map((item) => ({

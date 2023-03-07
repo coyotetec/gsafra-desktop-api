@@ -134,8 +134,8 @@ select sum(
   else (plan_financeiro_valores.valor) end
 ) as total, mes, ano
 from plan_financeiro_valores
-left join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
-left join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
+inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
+inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 group by mes, ano
@@ -149,9 +149,9 @@ select sum(
   else (plan_financeiro_valores.valor) end
 ) as total, mes, ano
 from plan_financeiro_valores
-left join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
-left join plan_financeiro on plan_financeiro.id = plan_financeiro_d.id_plan_financeiro
-left join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
+inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
+inner join plan_financeiro on plan_financeiro.id = plan_financeiro_d.id_plan_financeiro
+inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 and plan_financeiro.id_ciclo_producao = ${idSafra}
@@ -180,7 +180,7 @@ from(
         conta_receber_pagar.total_desconto
     )) as total, extract(month from conta_receber_pagar.data_vencimento) as mes, extract(year from conta_receber_pagar.data_vencimento) as ano
     from conta_receber_pagar
-    left join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
+    inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
     where conta_receber_pagar.situacao = 'A'
     and crp_m.tipo = 1
     and conta_receber_pagar.data_vencimento >= '${startDate}'
@@ -206,9 +206,9 @@ select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
   from movimento_conta_ciclo
-  left join movimento_conta_apropriacao on movimento_conta_apropriacao.id = movimento_conta_ciclo.id_movimento_conta_apropriacao
-  left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-  left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
+  inner join movimento_conta_apropriacao on movimento_conta_apropriacao.id = movimento_conta_ciclo.id_movimento_conta_apropriacao
+  inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+  inner join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
   where movimento_conta_m.compensado = 'S'
   and movimento_conta_m.tipo_lancamento = 'C'
   and movimento_conta_m.data_compensacao >= '${startDate}'
@@ -226,9 +226,9 @@ from(
     conta_receber_pagar.total_desconto
   )) as total, extract(month from conta_receber_pagar.data_vencimento) as mes, extract(year from conta_receber_pagar.data_vencimento) as ano
   from conta_receber_pagar_ciclo
-  left join crp_apropriacao on crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
-  left join conta_receber_pagar on conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
-  left join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
+  inner join crp_apropriacao on crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
+  inner join conta_receber_pagar on conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
+  inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
   where conta_receber_pagar.situacao = 'A'
   and crp_m.tipo = 1
   and conta_receber_pagar.data_vencimento >= '${startDate}'
@@ -240,8 +240,8 @@ from(
 
   select sum(cheque.valor) as total, extract(month from cheque.data_vencimento) as mes, extract(year from cheque.data_vencimento) as ano
   from cheque_ciclo
-  left join cheque_apropriacao on cheque_apropriacao.id = cheque_ciclo.id_cheque_apropriacao
-  left join cheque on cheque.id = cheque_apropriacao.id_cheque
+  inner join cheque_apropriacao on cheque_apropriacao.id = cheque_ciclo.id_cheque_apropriacao
+  inner join cheque on cheque.id = cheque_apropriacao.id_cheque
   where cheque.situacao = 'A'
   and cheque.tipo = 'R'
   and cheque.data_vencimento >= '${startDate}'
@@ -256,8 +256,8 @@ order by ano, mes
 export const cashFlowCreditsPlanQuery = (startDate: string, endDate: string) => `
 select sum(valor) as total, mes, ano
 from plan_financeiro_valores
-left join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
-left join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
+inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
+inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 and plano_conta.tipo = 'R'
@@ -268,9 +268,9 @@ order by ano, mes
 export const cashFlowCreditsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: number) => `
 select sum(valor) as total, mes, ano
 from plan_financeiro_valores
-left join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
-left join plan_financeiro on plan_financeiro.id = plan_financeiro_d.id_plan_financeiro
-left join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
+inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
+inner join plan_financeiro on plan_financeiro.id = plan_financeiro_d.id_plan_financeiro
+inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 and plano_conta.tipo = 'D'
@@ -300,7 +300,7 @@ from(
       conta_receber_pagar.total_desconto
       ) * -1) as total, extract(month from conta_receber_pagar.data_vencimento) as mes, extract(year from conta_receber_pagar.data_vencimento) as ano
     from conta_receber_pagar
-    left join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
+    inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
     where conta_receber_pagar.situacao = 'A'
     and crp_m.tipo = 2
     and conta_receber_pagar.data_vencimento >= '${startDate}'
@@ -335,9 +335,9 @@ select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal * -1) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
   from movimento_conta_ciclo
-  left join movimento_conta_apropriacao on movimento_conta_apropriacao.id = movimento_conta_ciclo.id_movimento_conta_apropriacao
-  left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-  left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
+  inner join movimento_conta_apropriacao on movimento_conta_apropriacao.id = movimento_conta_ciclo.id_movimento_conta_apropriacao
+  inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+  inner join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
   where movimento_conta_m.compensado = 'S'
   and movimento_conta_m.tipo_lancamento = 'D'
   and movimento_conta_m.data_compensacao >= '${startDate}'
@@ -355,9 +355,9 @@ from(
     conta_receber_pagar.total_desconto
     ) * -1) as total, extract(month from conta_receber_pagar.data_vencimento) as mes, extract(year from conta_receber_pagar.data_vencimento) as ano
     from conta_receber_pagar_ciclo
-    left join crp_apropriacao on crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
-  left join conta_receber_pagar on conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
-  left join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
+    inner join crp_apropriacao on crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
+  inner join conta_receber_pagar on conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
+  inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
   where conta_receber_pagar.situacao = 'A'
   and crp_m.tipo = 2
   and conta_receber_pagar.data_vencimento >= '${startDate}'
@@ -369,8 +369,8 @@ from(
 
   select sum(cheque.valor * -1) as total, extract(month from cheque.data_vencimento) as mes, extract(year from cheque.data_vencimento) as ano
   from cheque_ciclo
-  left join cheque_apropriacao on cheque_apropriacao.id = cheque_ciclo.id_cheque_apropriacao
-  left join cheque on cheque.id = cheque_apropriacao.id_cheque
+  inner join cheque_apropriacao on cheque_apropriacao.id = cheque_ciclo.id_cheque_apropriacao
+  inner join cheque on cheque.id = cheque_apropriacao.id_cheque
   where cheque.situacao = 'A'
   and cheque.tipo = 'E'
   and cheque.data_vencimento >= '${startDate}'
@@ -382,8 +382,8 @@ from(
 
   select sum(cartao_pagar_d.valor * -1) as total, extract(month from cartao_pagar_d.vencimento) as mes, extract(year from cartao_pagar_d.vencimento) as ano
   from cartao_pagar_d_ciclo
-  left join cartao_pagar_d_apropriacao on cartao_pagar_d_apropriacao.id = cartao_pagar_d_ciclo.id_cartao_pagar_d_apropriacao
-  left join cartao_pagar_d on cartao_pagar_d.id = cartao_pagar_d_apropriacao.id_cartao_pagar_d
+  inner join cartao_pagar_d_apropriacao on cartao_pagar_d_apropriacao.id = cartao_pagar_d_ciclo.id_cartao_pagar_d_apropriacao
+  inner join cartao_pagar_d on cartao_pagar_d.id = cartao_pagar_d_apropriacao.id_cartao_pagar_d
   where cartao_pagar_d.situacao = 0
   and cartao_pagar_d.vencimento >= '${startDate}'
   and cartao_pagar_d.vencimento <= '${endDate}'
@@ -397,8 +397,8 @@ order by ano, mes
 export const cashFlowDebitsPlanQuery = (startDate: string, endDate: string) => `
 select sum(valor * -1) as total, mes, ano
 from plan_financeiro_valores
-left join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
-left join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
+inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
+inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 and plano_conta.tipo = 'D'
@@ -409,9 +409,9 @@ order by ano, mes
 export const cashFlowDebitsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: number) => `
 select sum(valor * -1) as total, mes, ano
 from plan_financeiro_valores
-left join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
-left join plan_financeiro on plan_financeiro.id = plan_financeiro_d.id_plan_financeiro
-left join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
+inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
+inner join plan_financeiro on plan_financeiro.id = plan_financeiro_d.id_plan_financeiro
+inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 and plano_conta.tipo = 'R'

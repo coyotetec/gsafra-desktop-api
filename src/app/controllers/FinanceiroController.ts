@@ -10,7 +10,7 @@ class FinanceiroController {
       startDate: string,
       endDate: string,
       idSafra?: string
-  };
+    };
 
     if (!startDate || !endDate) {
       return response.status(400).json({ message: 'Datas inicial e final são obrigatórias' });
@@ -29,37 +29,47 @@ class FinanceiroController {
       end: parsedEndDate,
     });
 
-    const currentBalance = await FinanceiroRepository.findCurrentBalance(parsedStartDate);
-    const cashFlowBalanceData = await FinanceiroRepository.findCashFlowBalance(
-      parsedStartDate,
-      parsedEndDate,
-      parsedIdSafra
-    );
-    const cashFlowBalancePlanData = await FinanceiroRepository.findCashFlowBalancePlan(
-      parsedStartDate,
-      parsedEndDate,
-      parsedIdSafra
-    );
-    const cashFlowCreditsData = await FinanceiroRepository.findCashFlowCredits(
-      parsedStartDate,
-      parsedEndDate,
-      parsedIdSafra
-    );
-    const cashFlowCreditsPlanData = await FinanceiroRepository.findCashFlowCreditsPlan(
-      parsedStartDate,
-      parsedEndDate,
-      parsedIdSafra
-    );
-    const cashFlowDebitsData = await FinanceiroRepository.findCashFlowDebits(
-      parsedStartDate,
-      parsedEndDate,
-      parsedIdSafra
-    );
-    const cashFlowDebitsPlanData = await FinanceiroRepository.findCashFlowDebitsPlan(
-      parsedStartDate,
-      parsedEndDate,
-      parsedIdSafra
-    );
+    const [
+      currentBalance,
+      cashFlowBalanceData,
+      cashFlowBalancePlanData,
+      cashFlowCreditsData,
+      cashFlowCreditsPlanData,
+      cashFlowDebitsData,
+      cashFlowDebitsPlanData
+    ] = await Promise.all([
+      FinanceiroRepository.findCurrentBalance(parsedStartDate),
+      FinanceiroRepository.findCashFlowBalance(
+        parsedStartDate,
+        parsedEndDate,
+        parsedIdSafra
+      ),
+      FinanceiroRepository.findCashFlowBalancePlan(
+        parsedStartDate,
+        parsedEndDate,
+        parsedIdSafra
+      ),
+      FinanceiroRepository.findCashFlowCredits(
+        parsedStartDate,
+        parsedEndDate,
+        parsedIdSafra
+      ),
+      FinanceiroRepository.findCashFlowCreditsPlan(
+        parsedStartDate,
+        parsedEndDate,
+        parsedIdSafra
+      ),
+      FinanceiroRepository.findCashFlowDebits(
+        parsedStartDate,
+        parsedEndDate,
+        parsedIdSafra
+      ),
+      FinanceiroRepository.findCashFlowDebitsPlan(
+        parsedStartDate,
+        parsedEndDate,
+        parsedIdSafra
+      )
+    ]);
 
     const cashFlowBalance = parseCashFlow(months, cashFlowBalanceData, currentBalance);
     const cashFlowBalancePlan = parseCashFlow(months, cashFlowBalancePlanData, currentBalance);

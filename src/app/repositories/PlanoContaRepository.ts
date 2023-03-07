@@ -38,11 +38,12 @@ class PlanoContaRepository {
       let query = `
       select sum(movimento_conta_apropriacao.valor) as total, plano_conta.descricao as descricao
       from movimento_conta_apropriacao
-      left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-      left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
-      left join plano_conta on movimento_conta_apropriacao.id_plano_conta = plano_conta.id
+      inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+      inner join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
+      inner join plano_conta on movimento_conta_apropriacao.id_plano_conta = plano_conta.id
       where plano_conta.codigo like '${codigo}.%'
       and plano_conta.categoria = 2
+      and (movimento_conta.entre_empresas is null or movimento_conta.entre_empresas <> 1)
       ${startDate ? `and movimento_conta_m.data_compensacao >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `and movimento_conta_m.data_compensacao <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
       group by descricao
@@ -53,12 +54,13 @@ class PlanoContaRepository {
         query = `
         select sum(movimento_conta_ciclo.valor) as total, plano_conta.descricao as descricao
         from movimento_conta_ciclo
-        left join movimento_conta_apropriacao on movimento_conta_apropriacao.id = movimento_conta_ciclo.id_movimento_conta_apropriacao
-        left join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
-        left join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
-        left join plano_conta on plano_conta.id = movimento_conta_apropriacao.id_plano_conta
+        inner join movimento_conta_apropriacao on movimento_conta_apropriacao.id = movimento_conta_ciclo.id_movimento_conta_apropriacao
+        inner join movimento_conta on movimento_conta.id = movimento_conta_apropriacao.id_movimento_conta
+        inner join movimento_conta_m on movimento_conta_m.id = movimento_conta.id_movimento_conta_m
+        inner join plano_conta on plano_conta.id = movimento_conta_apropriacao.id_plano_conta
         where plano_conta.codigo like '${codigo}.%'
         and plano_conta.categoria = 2
+        and (movimento_conta.entre_empresas is null or movimento_conta.entre_empresas <> 1)
         and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
         ${startDate ? `and movimento_conta_m.data_compensacao >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and movimento_conta_m.data_compensacao <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}

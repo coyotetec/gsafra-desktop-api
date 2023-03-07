@@ -37,20 +37,22 @@ class ContaReceberController {
     });
 
     if (parsedStartDate) {
-      totalNextSeven = await FinanceiroRepository.findTotal({
-        tipo: 'receber',
-        period: 7,
-        startDate: parsedStartDate,
-        endDate: parsedEndDate,
-        idSafra: parsedIdSafra,
-      });
-      totalNextFifteen = await FinanceiroRepository.findTotal({
-        tipo: 'receber',
-        period: 15,
-        startDate: parsedStartDate,
-        endDate: parsedEndDate,
-        idSafra: parsedIdSafra,
-      });
+      [totalNextSeven, totalNextFifteen] = await Promise.all([
+        FinanceiroRepository.findTotal({
+          tipo: 'receber',
+          period: 7,
+          startDate: parsedStartDate,
+          endDate: parsedEndDate,
+          idSafra: parsedIdSafra,
+        }),
+        FinanceiroRepository.findTotal({
+          tipo: 'receber',
+          period: 15,
+          startDate: parsedStartDate,
+          endDate: parsedEndDate,
+          idSafra: parsedIdSafra,
+        })
+      ]);
     }
 
     response.json({
