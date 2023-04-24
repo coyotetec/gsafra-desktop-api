@@ -49,6 +49,7 @@ router.get('/tipos-patrimonio', TipoPatrimonioController.index);
 
 router.get('/plano-conta', PlanoContaController.index);
 router.get('/plano-conta/total/:codigo', PlanoContaController.total);
+router.get('/plano-conta/financeiro', PlanoContaController.financial);
 
 router.get('/movimento-conta/:codigo', MovimentoContaController.index);
 

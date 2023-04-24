@@ -35,3 +35,17 @@ export interface PlanoContaTotalDomain {
   descricao: string;
   total: number;
 }
+
+export interface PlanoContaFinancialPersistence {
+  CODIGO: string;
+  TOTAL: number;
+  MES: number;
+  ANO: number;
+}
+
+export interface PlanoContaFinancialDomain {
+  codigo: string;
+  total: number;
+  mes: number;
+  ano: number;
+}

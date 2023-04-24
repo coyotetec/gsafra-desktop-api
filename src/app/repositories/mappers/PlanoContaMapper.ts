@@ -1,4 +1,4 @@
-import { PlanoContaDomain, PlanoContaPersistence, PlanoContaTotalDomain, PlanoContaTotalPersistence } from '../../../types/PlanoContaTypes';
+import { PlanoContaDomain, PlanoContaFinancialDomain, PlanoContaFinancialPersistence, PlanoContaPersistence, PlanoContaTotalDomain, PlanoContaTotalPersistence } from '../../../types/PlanoContaTypes';
 
 class PlanoContaMapper {
   toPlanoContaDomain(persistence: PlanoContaPersistence): PlanoContaDomain {
@@ -21,6 +21,15 @@ class PlanoContaMapper {
     return {
       descricao: persistence.DESCRICAO,
       total: persistence.TOTAL
+    };
+  }
+
+  toFinancialDomain(persistence: PlanoContaFinancialPersistence): PlanoContaFinancialDomain {
+    return {
+      codigo: persistence.CODIGO,
+      total: persistence.TOTAL,
+      ano: persistence.ANO,
+      mes: persistence.MES,
     };
   }
 }

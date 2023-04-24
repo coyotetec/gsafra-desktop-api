@@ -1,12 +1,12 @@
-import { parse } from 'date-fns';
+import { eachMonthOfInterval, parse } from 'date-fns';
 import { Request, Response } from 'express';
 import PlanoContaRepository from '../repositories/PlanoContaRepository';
 
 class PlanoContaController {
   async index(request: Request, response: Response) {
     const { type, category } = request.query as {
-      type?: 'receita' | 'despesa',
-      category?: 'sintetica' | 'analitica',
+      type?: 'receita' | 'despesa';
+      category?: 'sintetica' | 'analitica';
     };
 
     const planosContas = await PlanoContaRepository.findAll(type, category);
@@ -17,9 +17,9 @@ class PlanoContaController {
   async total(request: Request, response: Response) {
     const { codigo } = request.params;
     const { startDate, endDate, idSafra } = request.query as {
-      startDate: string,
-      endDate: string,
-      idSafra?: string
+      startDate: string;
+      endDate: string;
+      idSafra?: string;
     };
 
     if (!codigo) {
@@ -27,21 +27,114 @@ class PlanoContaController {
     }
 
     const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     const total = await PlanoContaRepository.findTotal({
       codigo,
       startDate: parsedStartDate,
       endDate: parsedEndDate,
-      idSafra: parsedIdSafra
+      idSafra: parsedIdSafra,
     });
 
     response.json(total);
+  }
+
+  async financial(request: Request, response: Response) {
+    const { options, showZeros, startDate, endDate } = request.query as {
+      options: string;
+      showZeros: string;
+      startDate: string;
+      endDate: string;
+    };
+
+    if (!startDate || !endDate) {
+      return response.status(400).json({
+        message: 'Data final e inicial são obrigatórias'
+      });
+    }
+
+    const parsedOptions = options.split(',');
+    const parsedShowZeros = showZeros === 'true';
+    const parsedStartDate = parse(startDate, 'dd-MM-yyyy', new Date());
+    const parsedEndDate = parse(endDate, 'dd-MM-yyyy', new Date());
+
+    if (parsedStartDate > parsedEndDate) {
+      return response.status(400).json({
+        message: 'Data final precisa ser depois da inicial'
+      });
+    }
+
+    const chartAccounts = await PlanoContaRepository.findAll();
+    const total = await PlanoContaRepository.findFinancial(
+      parsedOptions,
+      parsedStartDate,
+      parsedEndDate
+    );
+
+    const months = eachMonthOfInterval({
+      start: parsedStartDate,
+      end: parsedEndDate,
+    });
+    const eachMonthTotal = months.map(() => 0);
+
+    const parsedData = chartAccounts.reduce((acc, chartAccount) => {
+      const data: any = {
+        codigo: chartAccount.codigo,
+        descricao: chartAccount.descricao,
+      };
+      let totalMonths = 0;
+
+      months.forEach((month, index) => {
+        data[`month${index}`] = total.reduce((acc, curr) => {
+          if (
+            curr.codigo.startsWith(chartAccount.codigo) &&
+            month.getFullYear() === curr.ano &&
+            month.getMonth() + 1 === curr.mes
+          ) {
+            return acc + curr.total;
+          }
+
+          return acc;
+        }, 0);
+
+        totalMonths += data[`month${index}`];
+        if (data.codigo.split('.').length === 1) {
+          eachMonthTotal[index] += data[`month${index}`];
+        }
+      });
+      data.total = totalMonths;
+
+      if (totalMonths !== 0 || parsedShowZeros) {
+        return [...acc, data];
+      }
+
+      return acc;
+    }, [] as any[]);
+
+    const accountsTotal = parsedData.reduce((acc, curr) => {
+      if (curr.total === 0) {
+        return acc;
+      }
+
+      if (curr.codigo.split('.').length === 1) {
+        return acc + curr.total;
+      }
+
+      return acc;
+    }, 0);
+
+    response.json({ total: accountsTotal, data: parsedData, eachMonthTotal });
   }
 }
 
