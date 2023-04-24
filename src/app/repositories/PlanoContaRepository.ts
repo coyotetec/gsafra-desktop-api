@@ -1,5 +1,7 @@
-import { format } from 'date-fns';
+import { addMonths, format } from 'date-fns';
 import database from '../../database';
+import { checksQuery, creditCardQuery, paymentsQuery, receivablesQuery } from '../../database/queries/planoContasQueries';
+import { PlanoContaDomain, PlanoContaFinancialDomain } from '../../types/PlanoContaTypes';
 import PlanoContaMapper from './mappers/PlanoContaMapper';
 
 interface FindTotalArgs {
@@ -11,13 +13,19 @@ interface FindTotalArgs {
 
 class PlanoContaRepository {
   findAll(type?: 'receita' | 'despesa', category?: 'sintetica' | 'analitica') {
-    return new Promise((resolve, reject) => {
+    return new Promise<PlanoContaDomain[]>((resolve, reject) => {
       const query = `
-      select * from plano_conta
-      where id > 0
+      select
+      plano_conta.*,
+      case substring(plano_conta.codigo from 2 for 1) when '.'
+        then cast(substring(plano_conta.codigo from 1 for 1) as integer)
+        else cast(substring(plano_conta.codigo from 1 for 2) as integer)
+      end as ordenacao
+      from plano_conta
+      where plano_conta.id > 0
       ${type ? `and tipo = ${type === 'receita' ? '\'R\'' : '\'D\''}` : ''}
       ${category ? `and categoria = ${category === 'sintetica' ? 1 : 2}` : ''}
-      order by codigo
+      order by ordenacao, codigo
       `;
 
       database.query(
@@ -77,6 +85,32 @@ class PlanoContaRepository {
           }
 
           resolve(result.map((planoConta) => PlanoContaMapper.toTotalDomain(planoConta)));
+        }
+      );
+    });
+  }
+
+  findFinancial(options: string[], startDate: Date, endDate: Date) {
+    return new Promise<PlanoContaFinancialDomain[]>((resolve, reject) => {
+      const formattedStartDate = format(startDate, 'yyyy-MM-dd');
+      const formattedEndDate = format(endDate, 'yyyy-MM-dd');
+      const query = [
+        ...(options.includes('payments') ? [paymentsQuery(formattedStartDate, formattedEndDate)] : []),
+        ...(options.includes('receivables') ? [receivablesQuery(formattedStartDate, formattedEndDate)] : []),
+        ...(options.includes('checks') ? [checksQuery(formattedStartDate, formattedEndDate)] : []),
+        ...(options.includes('creditCard') ? [creditCardQuery(formattedStartDate, formattedEndDate)] : []),
+      ].join(`
+      union all
+      `);
+
+      database.query(
+        query, [],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          }
+
+          resolve(result.map((planoConta) => PlanoContaMapper.toFinancialDomain(planoConta)));
         }
       );
     });
