@@ -24,6 +24,8 @@ class ColheitaRepository {
         right join talhao_safra on talhao_safra.id = colheita_talhao.id_talhao_safra
         right join talhao on talhao.id = talhao_safra.id_talhao
         where talhao_safra.id_ciclo_producao = ${idSafra}
+        and colheita.tipo_romaneio = 1
+        and colheita.situacao = 2
         group by talhao, tamanho_talhao
         `, [],
         (err, result) => {
@@ -77,6 +79,8 @@ class ColheitaRepository {
         inner join talhao_safra on talhao_safra.id = colheita_talhao.id_talhao_safra
         inner join talhao on talhao.id = talhao_safra.id_talhao
         where talhao_safra.id_ciclo_producao = ${idSafra}
+        and colheita.tipo_romaneio = 1
+        and colheita.situacao = 2
         group by talhao
         `, [],
         (err, result) => {
