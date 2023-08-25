@@ -1,4 +1,6 @@
-export const cashFlowBalanceQuery = (startDate: string, endDate: string) => `
+import { financialStatus } from "../../types/FinanceiroTypes";
+
+export const cashFlowBalanceQuery = (startDate: string, endDate: string, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
     select sum(
@@ -26,6 +28,7 @@ from(
     from conta_receber_pagar
     inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
     where conta_receber_pagar.situacao = 'A'
+    ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
     and conta_receber_pagar.data_vencimento >= '${startDate}'
     and conta_receber_pagar.data_vencimento <= '${endDate}'
     group by mes, ano
@@ -56,7 +59,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowBalanceQueryBySafra = (startDate: string, endDate: string, idSafra: number) => `
+export const cashFlowBalanceQueryBySafra = (startDate: string, endDate: string, idSafra: number, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
   select sum(
@@ -90,6 +93,7 @@ from(
   inner join conta_receber_pagar on conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
   inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
   where conta_receber_pagar.situacao = 'A'
+  ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
   and conta_receber_pagar.data_vencimento >= '${startDate}'
   and conta_receber_pagar.data_vencimento <= '${endDate}'
   and conta_receber_pagar_ciclo.id_ciclo_producao = ${idSafra}
@@ -159,7 +163,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsQuery = (startDate: string, endDate: string) => `
+export const cashFlowCreditsQuery = (startDate: string, endDate: string, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
     select sum(valor_principal) as total, extract(month from data_compensacao) as mes, extract(year from data_compensacao) as ano
@@ -183,6 +187,7 @@ from(
     inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
     where conta_receber_pagar.situacao = 'A'
     and crp_m.tipo = 1
+    ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
     and conta_receber_pagar.data_vencimento >= '${startDate}'
     and conta_receber_pagar.data_vencimento <= '${endDate}'
     group by mes, ano
@@ -201,7 +206,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsQueryBySafra = (startDate: string, endDate: string, idSafra: number) => `
+export const cashFlowCreditsQueryBySafra = (startDate: string, endDate: string, idSafra: number, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
@@ -231,6 +236,7 @@ from(
   inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
   where conta_receber_pagar.situacao = 'A'
   and crp_m.tipo = 1
+  ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
   and conta_receber_pagar.data_vencimento >= '${startDate}'
   and conta_receber_pagar.data_vencimento <= '${endDate}'
   and conta_receber_pagar_ciclo.id_ciclo_producao = ${idSafra}
@@ -279,7 +285,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowDebitsQuery = (startDate: string, endDate: string) => `
+export const cashFlowDebitsQuery = (startDate: string, endDate: string, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
   select sum(valor_principal * -1) as total, extract(month from data_compensacao) as mes, extract(year from data_compensacao) as ano
@@ -303,6 +309,7 @@ from(
     inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
     where conta_receber_pagar.situacao = 'A'
     and crp_m.tipo = 2
+    ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
     and conta_receber_pagar.data_vencimento >= '${startDate}'
     and conta_receber_pagar.data_vencimento <= '${endDate}'
     group by mes, ano
@@ -330,7 +337,7 @@ from(
     order by ano, mes
 `;
 
-export const cashFlowDebitsQueryBySafra = (startDate: string, endDate: string, idSafra: number) => `
+export const cashFlowDebitsQueryBySafra = (startDate: string, endDate: string, idSafra: number, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal * -1) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
@@ -360,6 +367,7 @@ from(
   inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
   where conta_receber_pagar.situacao = 'A'
   and crp_m.tipo = 2
+  ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
   and conta_receber_pagar.data_vencimento >= '${startDate}'
   and conta_receber_pagar.data_vencimento <= '${endDate}'
   and conta_receber_pagar_ciclo.id_ciclo_producao = ${idSafra}

@@ -3,13 +3,15 @@ import { parse, eachMonthOfInterval } from 'date-fns';
 
 import FinanceiroRepository from '../repositories/FinanceiroRepository';
 import parseCashFlow from '../utils/parseCashFlow';
+import { financialStatus } from '../../types/FinanceiroTypes';
 
 class FinanceiroController {
   async cashFlow(request: Request, response: Response) {
-    const { startDate, endDate, idSafra } = request.query as {
+    const { startDate, endDate, idSafra, status } = request.query as {
       startDate: string,
       endDate: string,
-      idSafra?: string
+      idSafra?: string,
+      status?: financialStatus
     };
 
     if (!startDate || !endDate) {
@@ -42,7 +44,8 @@ class FinanceiroController {
       FinanceiroRepository.findCashFlowBalance(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra
+        parsedIdSafra,
+        status,
       ),
       FinanceiroRepository.findCashFlowBalancePlan(
         parsedStartDate,
@@ -52,7 +55,8 @@ class FinanceiroController {
       FinanceiroRepository.findCashFlowCredits(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra
+        parsedIdSafra,
+        status
       ),
       FinanceiroRepository.findCashFlowCreditsPlan(
         parsedStartDate,
@@ -62,7 +66,8 @@ class FinanceiroController {
       FinanceiroRepository.findCashFlowDebits(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra
+        parsedIdSafra,
+        status
       ),
       FinanceiroRepository.findCashFlowDebitsPlan(
         parsedStartDate,

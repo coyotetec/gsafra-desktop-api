@@ -3,6 +3,7 @@ import database from '../../database';
 import { checksQuery, creditCardQuery, paymentsQuery, receivablesQuery } from '../../database/queries/planoContasQueries';
 import { PlanoContaDomain, PlanoContaFinancialDomain } from '../../types/PlanoContaTypes';
 import PlanoContaMapper from './mappers/PlanoContaMapper';
+import { financialStatus } from '../../types/FinanceiroTypes';
 
 interface FindTotalArgs {
   codigo: string;
@@ -90,13 +91,13 @@ class PlanoContaRepository {
     });
   }
 
-  findFinancial(options: string[], startDate: Date, endDate: Date) {
+  findFinancial(options: string[], startDate: Date, endDate: Date, status?: financialStatus) {
     return new Promise<PlanoContaFinancialDomain[]>((resolve, reject) => {
       const formattedStartDate = format(startDate, 'yyyy-MM-dd');
       const formattedEndDate = format(endDate, 'yyyy-MM-dd');
       const query = [
-        ...(options.includes('payments') ? [paymentsQuery(formattedStartDate, formattedEndDate)] : []),
-        ...(options.includes('receivables') ? [receivablesQuery(formattedStartDate, formattedEndDate)] : []),
+        ...(options.includes('payments') ? [paymentsQuery(formattedStartDate, formattedEndDate, status)] : []),
+        ...(options.includes('receivables') ? [receivablesQuery(formattedStartDate, formattedEndDate, status)] : []),
         ...(options.includes('checks') ? [checksQuery(formattedStartDate, formattedEndDate)] : []),
         ...(options.includes('creditCard') ? [creditCardQuery(formattedStartDate, formattedEndDate)] : []),
       ].join(`

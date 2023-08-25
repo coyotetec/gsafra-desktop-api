@@ -1,6 +1,7 @@
 import { eachMonthOfInterval, parse } from 'date-fns';
 import { Request, Response } from 'express';
 import PlanoContaRepository from '../repositories/PlanoContaRepository';
+import { financialStatus } from '../../types/FinanceiroTypes';
 
 class PlanoContaController {
   async index(request: Request, response: Response) {
@@ -51,11 +52,12 @@ class PlanoContaController {
   }
 
   async financial(request: Request, response: Response) {
-    const { options, showZeros, startDate, endDate } = request.query as {
+    const { options, showZeros, startDate, endDate, status } = request.query as {
       options: string;
       showZeros: string;
       startDate: string;
       endDate: string;
+      status?: financialStatus;
     };
 
     if (!startDate || !endDate) {
@@ -79,7 +81,8 @@ class PlanoContaController {
     const total = await PlanoContaRepository.findFinancial(
       parsedOptions,
       parsedStartDate,
-      parsedEndDate
+      parsedEndDate,
+      status
     );
 
     const months = eachMonthOfInterval({

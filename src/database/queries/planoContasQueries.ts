@@ -1,4 +1,6 @@
-export const paymentsQuery = (startDate: string, endDate: string) => `
+import { financialStatus } from '../../types/FinanceiroTypes';
+
+export const paymentsQuery = (startDate: string, endDate: string, status?: financialStatus) => `
 select
 plano_conta.codigo as codigo,
 sum(crp_apropriacao.valor) * -1 as total,
@@ -10,12 +12,13 @@ inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
 inner join plano_conta on plano_conta.id = crp_apropriacao.id_plano_conta
 where conta_receber_pagar.data_vencimento >= '${startDate}'
 and conta_receber_pagar.data_vencimento <= '${endDate}'
+${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
 and conta_receber_pagar.situacao = 'A'
 and crp_m.tipo = 2
 group by codigo, ano, mes
 `;
 
-export const receivablesQuery = (startDate: string, endDate: string) => `
+export const receivablesQuery = (startDate: string, endDate: string, status?: financialStatus) => `
 select
 plano_conta.codigo as codigo,
 sum(crp_apropriacao.valor) as total,
@@ -27,12 +30,13 @@ inner join crp_m on crp_m.id = conta_receber_pagar.id_crp_m
 inner join plano_conta on plano_conta.id = crp_apropriacao.id_plano_conta
 where conta_receber_pagar.data_vencimento >= '${startDate}'
 and conta_receber_pagar.data_vencimento <= '${endDate}'
+${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
 and conta_receber_pagar.situacao = 'A'
 and crp_m.tipo = 1
 group by codigo, ano, mes
 `;
 
-export const checksQuery = (startDate: string, endDate: string) => `
+export const checksQuery = (startDate: string, endDate: string, status?: financialStatus) => `
 select
 plano_conta.codigo as codigo,
 sum(

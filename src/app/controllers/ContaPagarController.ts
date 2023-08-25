@@ -2,13 +2,15 @@ import { parse } from 'date-fns';
 import { Request, Response } from 'express';
 import { TotalDomain } from '../../types/TotalTypes';
 import FinanceiroRepository from '../repositories/FinanceiroRepository';
+import { financialStatus } from '../../types/FinanceiroTypes';
 
 class ContaPagarController {
   async total(request: Request, response: Response) {
-    const { startDate, endDate, idSafra } = request.query as {
+    const { startDate, endDate, idSafra, status } = request.query as {
       startDate?: string,
       endDate?: string,
-      idSafra?: string
+      idSafra?: string,
+      status?: financialStatus,
     };
 
     const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
@@ -31,6 +33,7 @@ class ContaPagarController {
     const total = await FinanceiroRepository.findTotal({
       tipo: 'pagar',
       period: 0,
+      status,
       startDate: parsedStartDate,
       endDate: parsedEndDate,
       idSafra: parsedIdSafra,
@@ -41,6 +44,7 @@ class ContaPagarController {
         FinanceiroRepository.findTotal({
           tipo: 'pagar',
           period: 7,
+          status,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
           idSafra: parsedIdSafra,
@@ -48,6 +52,7 @@ class ContaPagarController {
         FinanceiroRepository.findTotal({
           tipo: 'pagar',
           period: 15,
+          status,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
           idSafra: parsedIdSafra,

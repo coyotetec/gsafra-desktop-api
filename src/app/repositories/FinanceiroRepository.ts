@@ -17,12 +17,13 @@ import {
   cashFlowDebitsPlanQuery,
 } from '../../database/queries/financeiroQueries';
 import { format } from 'date-fns';
-import { CashFlowDomain } from '../../types/FinanceiroTypes';
+import { CashFlowDomain, financialStatus } from '../../types/FinanceiroTypes';
 import FinanceiroMapper from './mappers/FinanceiroMapper';
 
 interface FindTotalArgs {
   tipo: 'pagar' | 'receber';
   period: 0 | 7 | 15;
+  status?: financialStatus;
   startDate?: Date;
   endDate?: Date;
   idSafra?: number;
@@ -31,6 +32,7 @@ interface FindTotalArgs {
 class FinanceiroRepository {
   findTotal({
     tipo,
+    status,
     startDate,
     endDate,
     period = 0,
@@ -49,7 +51,9 @@ class FinanceiroRepository {
       ) AS total
       FROM conta_receber_pagar
       INNER JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
-      WHERE crp_m.tipo = ? AND conta_receber_pagar.situacao = 'A'
+      WHERE crp_m.tipo = ? 
+      AND conta_receber_pagar.situacao = 'A'
+      ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
       ${period !== 0 ? `
       ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${startDate ? `AND conta_receber_pagar.data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
@@ -78,8 +82,10 @@ class FinanceiroRepository {
         INNER JOIN crp_apropriacao ON crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
         INNER JOIN conta_receber_pagar ON conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
         INNER JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
-        WHERE crp_m.tipo = ? AND conta_receber_pagar.situacao = 'A'
+        WHERE crp_m.tipo = ? 
         AND conta_receber_pagar_ciclo.id_ciclo_producao = ?
+        AND conta_receber_pagar.situacao = 'A'
+        ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
         ${period !== 0 ? `
         ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${startDate ? `AND conta_receber_pagar.data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
@@ -128,17 +134,19 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowBalance(startDate: Date, endDate: Date, idSafra?: number) {
+  findCashFlowBalance(startDate: Date, endDate: Date, idSafra?: number, status?: financialStatus) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowBalanceQueryBySafra(
           format(startDate, 'yyyy-MM-dd'),
           format(endDate, 'yyyy-MM-dd'),
-          idSafra
+          idSafra,
+          status
         )
         : cashFlowBalanceQuery(
           format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd')
+          format(endDate, 'yyyy-MM-dd'),
+          status
         );
 
       database.query(
@@ -180,17 +188,19 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowCredits(startDate: Date, endDate: Date, idSafra?: number) {
+  findCashFlowCredits(startDate: Date, endDate: Date, idSafra?: number, status?: financialStatus) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowCreditsQueryBySafra(
           format(startDate, 'yyyy-MM-dd'),
           format(endDate, 'yyyy-MM-dd'),
           idSafra,
+          status
         )
         : cashFlowCreditsQuery(
           format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd')
+          format(endDate, 'yyyy-MM-dd'),
+          status
         );
 
       database.query(
@@ -232,7 +242,7 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowDebits(startDate: Date, endDate: Date, idSafra?: number) {
+  findCashFlowDebits(startDate: Date, endDate: Date, idSafra?: number, status?: financialStatus) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowDebitsQueryBySafra(
