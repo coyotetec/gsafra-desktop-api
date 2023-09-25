@@ -10,7 +10,6 @@ class CartaoController {
       idSafra?: string
     };
 
-    const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
     const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
     const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
@@ -22,7 +21,7 @@ class CartaoController {
       CartaoRepository.findTotal({
         startDate: parsedStartDate,
         endDate: parsedEndDate,
-        idSafra: parsedIdSafra,
+        idSafra,
       }),
       CartaoRepository.findTotal({}),
       CartaoRepository.findLimitTotal()

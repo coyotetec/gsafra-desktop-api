@@ -9,7 +9,7 @@ interface FindTotalArgs {
   period: 0 | 7 | 15;
   startDate?: Date;
   endDate?: Date;
-  idSafra?: number;
+  idSafra?: string;
 }
 
 class ChequeRepository {
@@ -51,7 +51,7 @@ class ChequeRepository {
         INNER JOIN cheque_apropriacao ON cheque_apropriacao.id = cheque_ciclo.id_cheque_apropriacao
         INNER JOIN cheque ON cheque.id = cheque_apropriacao.id_cheque
         WHERE cheque.tipo = ? AND cheque.situacao = 'A'
-        AND cheque_ciclo.id_ciclo_producao = ?
+        AND cheque_ciclo.id_ciclo_producao in (${idSafra})
         ${period !== 0 ? `
         ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${startDate ? `AND data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
@@ -63,7 +63,7 @@ class ChequeRepository {
       }
 
       database.query(
-        query, [tipo === 'receber' ? 'R' : 'E', ...(idSafra ? [idSafra] : [])],
+        query, [tipo === 'receber' ? 'R' : 'E'],
         (err, [result]) => {
           if (err) {
             reject(err);

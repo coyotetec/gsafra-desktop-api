@@ -20,7 +20,6 @@ class FinanceiroController {
 
     const parsedStartDate = parse(startDate, 'dd-MM-yyyy', new Date());
     const parsedEndDate = parse(endDate, 'dd-MM-yyyy', new Date());
-    const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
 
     if (parsedStartDate > parsedEndDate) {
       return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
@@ -44,35 +43,35 @@ class FinanceiroController {
       FinanceiroRepository.findCashFlowBalance(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra,
+        idSafra,
         status,
       ),
       FinanceiroRepository.findCashFlowBalancePlan(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra
+        idSafra
       ),
       FinanceiroRepository.findCashFlowCredits(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra,
+        idSafra,
         status
       ),
       FinanceiroRepository.findCashFlowCreditsPlan(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra
+        idSafra
       ),
       FinanceiroRepository.findCashFlowDebits(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra,
+        idSafra,
         status
       ),
       FinanceiroRepository.findCashFlowDebitsPlan(
         parsedStartDate,
         parsedEndDate,
-        parsedIdSafra
+        idSafra
       )
     ]);
 

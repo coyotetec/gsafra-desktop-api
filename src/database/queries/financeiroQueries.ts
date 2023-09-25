@@ -1,4 +1,4 @@
-import { financialStatus } from "../../types/FinanceiroTypes";
+import { financialStatus } from '../../types/FinanceiroTypes';
 
 export const cashFlowBalanceQuery = (startDate: string, endDate: string, status?: financialStatus) => `
 select sum(total) as total, mes, ano
@@ -59,7 +59,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowBalanceQueryBySafra = (startDate: string, endDate: string, idSafra: number, status?: financialStatus) => `
+export const cashFlowBalanceQueryBySafra = (startDate: string, endDate: string, idSafra: string, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
   select sum(
@@ -74,7 +74,7 @@ from(
   where movimento_conta_m.compensado = 'S'
   and movimento_conta_m.data_compensacao >= '${startDate}'
   and movimento_conta_m.data_compensacao <= '${endDate}'
-  and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
+  and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -96,7 +96,7 @@ from(
   ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
   and conta_receber_pagar.data_vencimento >= '${startDate}'
   and conta_receber_pagar.data_vencimento <= '${endDate}'
-  and conta_receber_pagar_ciclo.id_ciclo_producao = ${idSafra}
+  and conta_receber_pagar_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -112,7 +112,7 @@ from(
   where cheque.situacao = 'A'
   and cheque.data_vencimento >= '${startDate}'
   and cheque.data_vencimento <= '${endDate}'
-  and cheque_ciclo.id_ciclo_producao = ${idSafra}
+  and cheque_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -124,7 +124,7 @@ from(
   where situacao = 0
   and cartao_pagar_d.vencimento >= '${startDate}'
   and cartao_pagar_d.vencimento <= '${endDate}'
-  and cartao_pagar_d_ciclo.id_ciclo_producao = ${idSafra}
+  and cartao_pagar_d_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 )
 group by mes, ano
@@ -146,7 +146,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowBalancePlanBySafraQuery = (startDate: string, endDate: string, idSafra: number) => `
+export const cashFlowBalancePlanBySafraQuery = (startDate: string, endDate: string, idSafra: string) => `
 select sum(
   case when plano_conta.tipo = 'D'
   then (plan_financeiro_valores.valor * -1)
@@ -158,7 +158,7 @@ inner join plan_financeiro on plan_financeiro.id = plan_financeiro_d.id_plan_fin
 inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
-and plan_financeiro.id_ciclo_producao = ${idSafra}
+and plan_financeiro.id_ciclo_producao in (${idSafra})
 group by mes, ano
 order by ano, mes
 `;
@@ -206,7 +206,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsQueryBySafra = (startDate: string, endDate: string, idSafra: number, status?: financialStatus) => `
+export const cashFlowCreditsQueryBySafra = (startDate: string, endDate: string, idSafra: string, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
@@ -218,7 +218,7 @@ from(
   and movimento_conta_m.tipo_lancamento = 'C'
   and movimento_conta_m.data_compensacao >= '${startDate}'
   and movimento_conta_m.data_compensacao <= '${endDate}'
-  and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
+  and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -239,7 +239,7 @@ from(
   ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
   and conta_receber_pagar.data_vencimento >= '${startDate}'
   and conta_receber_pagar.data_vencimento <= '${endDate}'
-  and conta_receber_pagar_ciclo.id_ciclo_producao = ${idSafra}
+  and conta_receber_pagar_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -252,7 +252,7 @@ from(
   and cheque.tipo = 'R'
   and cheque.data_vencimento >= '${startDate}'
   and cheque.data_vencimento <= '${endDate}'
-  and cheque_ciclo.id_ciclo_producao = ${idSafra}
+  and cheque_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 )
 group by mes, ano
@@ -271,7 +271,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: number) => `
+export const cashFlowCreditsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: string) => `
 select sum(valor) as total, mes, ano
 from plan_financeiro_valores
 inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
@@ -280,7 +280,7 @@ inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 and plano_conta.tipo = 'D'
-and plan_financeiro.id_ciclo_producao = ${idSafra}
+and plan_financeiro.id_ciclo_producao in (${idSafra})
 group by mes, ano
 order by ano, mes
 `;
@@ -337,7 +337,7 @@ from(
     order by ano, mes
 `;
 
-export const cashFlowDebitsQueryBySafra = (startDate: string, endDate: string, idSafra: number, status?: financialStatus) => `
+export const cashFlowDebitsQueryBySafra = (startDate: string, endDate: string, idSafra: string, status?: financialStatus) => `
 select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal * -1) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
@@ -349,7 +349,7 @@ from(
   and movimento_conta_m.tipo_lancamento = 'D'
   and movimento_conta_m.data_compensacao >= '${startDate}'
   and movimento_conta_m.data_compensacao <= '${endDate}'
-  and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
+  and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -370,7 +370,7 @@ from(
   ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
   and conta_receber_pagar.data_vencimento >= '${startDate}'
   and conta_receber_pagar.data_vencimento <= '${endDate}'
-  and conta_receber_pagar_ciclo.id_ciclo_producao = ${idSafra}
+  and conta_receber_pagar_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -383,7 +383,7 @@ from(
   and cheque.tipo = 'E'
   and cheque.data_vencimento >= '${startDate}'
   and cheque.data_vencimento <= '${endDate}'
-  and cheque_ciclo.id_ciclo_producao = ${idSafra}
+  and cheque_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
 
   union all
@@ -395,7 +395,7 @@ from(
   where cartao_pagar_d.situacao = 0
   and cartao_pagar_d.vencimento >= '${startDate}'
   and cartao_pagar_d.vencimento <= '${endDate}'
-  and cartao_pagar_d_ciclo.id_ciclo_producao = ${idSafra}
+  and cartao_pagar_d_ciclo.id_ciclo_producao in (${idSafra})
   group by mes, ano
   )
 group by mes, ano
@@ -414,7 +414,7 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowDebitsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: number) => `
+export const cashFlowDebitsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: string) => `
 select sum(valor * -1) as total, mes, ano
 from plan_financeiro_valores
 inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
@@ -423,7 +423,7 @@ inner join plano_conta on plano_conta.id = plan_financeiro_d.id_plano_conta
 where CAST((ano||'-'||mes||'-1') as date) >= '${startDate}'
 and CAST((ano||'-'||mes||'-1') as date) <= '${endDate}'
 and plano_conta.tipo = 'R'
-and plan_financeiro.id_ciclo_producao = ${idSafra}
+and plan_financeiro.id_ciclo_producao in (${idSafra})
 group by mes, ano
 order by ano, mes
 `;

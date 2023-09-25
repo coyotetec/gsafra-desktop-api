@@ -13,7 +13,6 @@ class ContaReceberController {
       status?: financialStatus,
     };
 
-    const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
     const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
     const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
@@ -36,7 +35,7 @@ class ContaReceberController {
       status,
       startDate: parsedStartDate,
       endDate: parsedEndDate,
-      idSafra: parsedIdSafra,
+      idSafra,
     });
 
     if (parsedStartDate) {
@@ -47,7 +46,7 @@ class ContaReceberController {
           status,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
-          idSafra: parsedIdSafra,
+          idSafra,
         }),
         FinanceiroRepository.findTotal({
           tipo: 'receber',
@@ -55,7 +54,7 @@ class ContaReceberController {
           status,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
-          idSafra: parsedIdSafra,
+          idSafra,
         })
       ]);
     }

@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 interface FindTotalArgs {
   startDate?: Date;
   endDate?: Date;
-  idSafra?: number;
+  idSafra?: string;
 }
 
 class CartaoRepository {
@@ -59,12 +59,12 @@ class CartaoRepository {
         WHERE cartao_pagar_d.situacao = 0
         ${startDate ? `AND cartao_pagar_d.vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `AND cartao_pagar_d.vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
-        AND cartao_pagar_d_ciclo.id_ciclo_producao = ?
+        AND cartao_pagar_d_ciclo.id_ciclo_producao in (${idSafra})
         `;
       }
 
       database.query(
-        query, [...(idSafra ? [idSafra] : [])],
+        query, [],
         (err, [result]) => {
           if (err) {
             reject(err);

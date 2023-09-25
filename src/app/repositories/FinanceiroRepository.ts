@@ -26,7 +26,7 @@ interface FindTotalArgs {
   status?: financialStatus;
   startDate?: Date;
   endDate?: Date;
-  idSafra?: number;
+  idSafra?: string;
 }
 
 class FinanceiroRepository {
@@ -51,7 +51,7 @@ class FinanceiroRepository {
       ) AS total
       FROM conta_receber_pagar
       INNER JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
-      WHERE crp_m.tipo = ? 
+      WHERE crp_m.tipo = ?
       AND conta_receber_pagar.situacao = 'A'
       ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
       ${period !== 0 ? `
@@ -82,8 +82,8 @@ class FinanceiroRepository {
         INNER JOIN crp_apropriacao ON crp_apropriacao.id = conta_receber_pagar_ciclo.id_crp_apropriacao
         INNER JOIN conta_receber_pagar ON conta_receber_pagar.id = crp_apropriacao.id_conta_receber_pagar
         INNER JOIN crp_m ON crp_m.id = conta_receber_pagar.id_crp_m
-        WHERE crp_m.tipo = ? 
-        AND conta_receber_pagar_ciclo.id_ciclo_producao = ?
+        WHERE crp_m.tipo = ?
+        AND conta_receber_pagar_ciclo.id_ciclo_producao in (${idSafra})
         AND conta_receber_pagar.situacao = 'A'
         ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
         ${period !== 0 ? `
@@ -97,7 +97,7 @@ class FinanceiroRepository {
       }
 
       database.query(
-        query, [tipo === 'receber' ? 1 : 2, ...(idSafra ? [idSafra] : [])],
+        query, [tipo === 'receber' ? 1 : 2],
         (err, [result]) => {
           if (err) {
             reject(err);
@@ -134,7 +134,7 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowBalance(startDate: Date, endDate: Date, idSafra?: number, status?: financialStatus) {
+  findCashFlowBalance(startDate: Date, endDate: Date, idSafra?: string, status?: financialStatus) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowBalanceQueryBySafra(
@@ -162,7 +162,7 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowBalancePlan(startDate: Date, endDate: Date, idSafra?: number) {
+  findCashFlowBalancePlan(startDate: Date, endDate: Date, idSafra?: string) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowBalancePlanBySafraQuery(
@@ -188,7 +188,7 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowCredits(startDate: Date, endDate: Date, idSafra?: number, status?: financialStatus) {
+  findCashFlowCredits(startDate: Date, endDate: Date, idSafra?: string, status?: financialStatus) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowCreditsQueryBySafra(
@@ -216,7 +216,7 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowCreditsPlan(startDate: Date, endDate: Date, idSafra?: number) {
+  findCashFlowCreditsPlan(startDate: Date, endDate: Date, idSafra?: string) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowCreditsPlanBySafraQuery(
@@ -242,17 +242,19 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowDebits(startDate: Date, endDate: Date, idSafra?: number, status?: financialStatus) {
+  findCashFlowDebits(startDate: Date, endDate: Date, idSafra?: string, status?: financialStatus) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowDebitsQueryBySafra(
           format(startDate, 'yyyy-MM-dd'),
           format(endDate, 'yyyy-MM-dd'),
-          idSafra
+          idSafra,
+          status
         )
         : cashFlowDebitsQuery(
           format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd')
+          format(endDate, 'yyyy-MM-dd'),
+          status
         );
 
       database.query(
@@ -268,7 +270,7 @@ class FinanceiroRepository {
     });
   }
 
-  findCashFlowDebitsPlan(startDate: Date, endDate: Date, idSafra?: number) {
+  findCashFlowDebitsPlan(startDate: Date, endDate: Date, idSafra?: string) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowDebitsPlanBySafraQuery(

@@ -11,7 +11,6 @@ class ChequeReceberController {
       idSafra?: string
     };
 
-    const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
     const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
     const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
@@ -33,7 +32,7 @@ class ChequeReceberController {
       period: 0,
       startDate: parsedStartDate,
       endDate: parsedEndDate,
-      idSafra: parsedIdSafra,
+      idSafra,
     });
 
     if (parsedStartDate) {
@@ -43,14 +42,14 @@ class ChequeReceberController {
           period: 7,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
-          idSafra: parsedIdSafra,
+          idSafra,
         }),
         ChequeRepository.findTotal({
           tipo: 'receber',
           period: 15,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
-          idSafra: parsedIdSafra,
+          idSafra,
         })
       ]);
     }

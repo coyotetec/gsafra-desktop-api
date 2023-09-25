@@ -9,7 +9,7 @@ interface FindTotalArgs {
   codigo: string;
   startDate?: Date;
   endDate?: Date;
-  idSafra?: number;
+  idSafra?: string;
 }
 
 class PlanoContaRepository {
@@ -70,7 +70,7 @@ class PlanoContaRepository {
         where plano_conta.codigo like '${codigo}.%'
         and plano_conta.categoria = 2
         and (movimento_conta.entre_empresas is null or movimento_conta.entre_empresas <> 1)
-        and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
+        and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
         ${startDate ? `and movimento_conta_m.data_compensacao >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and movimento_conta_m.data_compensacao <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         group by descricao
