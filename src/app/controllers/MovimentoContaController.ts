@@ -15,7 +15,6 @@ class MovimentoContaController {
       return response.status(400).json({ message: 'Código é obrigatório' });
     }
 
-    const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
     const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
     const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
 
@@ -27,7 +26,7 @@ class MovimentoContaController {
       codigo,
       startDate: parsedStartDate,
       endDate: parsedEndDate,
-      idSafra: parsedIdSafra
+      idSafra
     });
 
     response.json(accountMovements);

@@ -7,7 +7,7 @@ interface FindAllArgs {
   codigo: string;
   startDate?: Date;
   endDate?: Date;
-  idSafra?: number;
+  idSafra?: string;
 }
 
 class MovimentoContaRepository {

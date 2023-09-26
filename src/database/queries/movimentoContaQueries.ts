@@ -29,7 +29,7 @@ ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 `;
 
-export const accountMovementsBySafraQuery = (codigo: string, idSafra: number, startDate?: string, endDate?: string) => `
+export const accountMovementsBySafraQuery = (codigo: string, idSafra: string, startDate?: string, endDate?: string) => `
 select
   movimento_conta_m.data_compensacao as data,
   movimento_conta.valor as valor_total,
@@ -57,7 +57,7 @@ left join pessoa on pessoa.id = movimento_conta.id_pessoa
 where plano_conta.codigo like '${codigo}.%'
 and plano_conta.categoria = 2
 and (movimento_conta.entre_empresas is null or movimento_conta.entre_empresas <> 1)
-and movimento_conta_ciclo.id_ciclo_producao = ${idSafra}
+and movimento_conta_ciclo.id_ciclo_producao in (${idSafra})
 ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 `;
