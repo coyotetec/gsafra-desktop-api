@@ -32,6 +32,7 @@ class AtividadeAgricolaRepository {
         inner join produto_almoxarifado on produto_almoxarifado.id = agri_atv_insumo.id_produto_almoxarifado
         inner join unidade on unidade.id = agri_atv_insumo.id_unidade
         where agri_atv.id_ciclo_producao in (${idSafra})
+        and agri_atv.status_processamento = 2
         ${idTalhao ? `and agri_atv_talhao_safra.id_talhao_safra = ${idTalhao}` : ''}
         ${startDate ? `and agri_atv.data_inicio >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and agri_atv.data_inicio <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}

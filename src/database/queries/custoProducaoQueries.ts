@@ -87,6 +87,7 @@ select
 from agri_atv_talhao_safra
 inner join agri_atv on agri_atv.id = agri_atv_talhao_safra.id_agri_atv
 where agri_atv.id_ciclo_producao in (${idSafra})
+and agri_atv.status_processamento = 2
 ${idTalhao ? `and agri_atv_talhao_safra.id_talhao_safra = ${idTalhao}` : ''}
 ${startDate ? `and agri_atv.data_inicio >= '${startDate}'` : ''}
 ${endDate ? `and agri_atv.data_inicio <= '${endDate}'` : ''}
@@ -215,6 +216,7 @@ from(
   inner join variedade on variedade.id = talhao_safra.id_variedade
   inner join ciclo_producao on ciclo_producao.id = talhao_safra.id_ciclo_producao
   where agri_atv.id_ciclo_producao in (${idSafra})
+  and agri_atv.status_processamento = 2
   ${idTalhao ? `and agri_atv_talhao_safra.id_talhao_safra = ${idTalhao}` : ''}
   ${startDate ? `and agri_atv.data_inicio >= '${startDate}'` : ''}
   ${endDate ? `and agri_atv.data_inicio <= '${endDate}'` : ''}
