@@ -2,6 +2,7 @@ import express from 'express';
 import cors from './app/middlewares/cors';
 import errorHandler from './app/middlewares/errorHandler';
 import 'express-async-errors';
+import 'dotenv/config';
 
 import routes from './routes';
 import updateDatabaseName from './app/middlewares/updateDatabaseName';
