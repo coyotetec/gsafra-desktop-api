@@ -2,12 +2,15 @@ import Firebird from 'node-firebird';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const dbPaths = JSON.parse(
-  fs.readFileSync(
-    path.resolve(__dirname, '..', '..', '..', 'dbPaths.json'),
-    'utf8',
-  ),
-);
+const dbPaths =
+  process.env.ENVIRONMENT !== 'cloud'
+    ? JSON.parse(
+        fs.readFileSync(
+          path.resolve(__dirname, '..', '..', '..', 'dbPaths.json'),
+          'utf8',
+        ),
+      )
+    : null;
 
 export function dbOptionsGen(databaseName: string): Firebird.Options {
   if (process.env.ENVIRONMENT === 'cloud') {
