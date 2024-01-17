@@ -12,11 +12,11 @@ const dbPaths = JSON.parse(
 export function dbOptionsGen(databaseName: string): Firebird.Options {
   if (process.env.ENVIRONMENT === 'cloud') {
     return {
-      host: 'node165871-dbgsafra.nordeste-idc.saveincloud.net',
-      port: 12081,
+      host: process.env.CLOUD_DATABASE_HOST,
+      port: Number(process.env.CLOUD_DATABASE_PORT),
       database: `/opt/firebird/data/${databaseName}/AGRO.FDB`,
-      user: 'SYSDBA',
-      password: 'ak0TJPGR68xcIdEbZ9l1',
+      user: process.env.CLOUD_DATABASE_USER,
+      password: process.env.CLOUD_DATABASE_PASSWORD,
       lowercase_keys: false,
       pageSize: 4096,
     };
