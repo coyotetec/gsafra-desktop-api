@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
-import ColheitaRepository, { descontoType } from '../repositories/ColheitaRepository';
+import ColheitaRepository, {
+  descontoType,
+} from '../repositories/ColheitaRepository';
 
 class ColheitaController {
   async total(request: Request, response: Response) {
@@ -11,15 +13,31 @@ class ColheitaController {
 
     const parsedIdSafra = Number(idSafra);
 
-    const talhoesTotal = await ColheitaRepository.findTotal(parsedIdSafra);
+    const talhoesTotal = await ColheitaRepository.findTotal(
+      request.databaseName,
+      parsedIdSafra,
+    );
 
-    const totalHectares = talhoesTotal.reduce((acc, curr) => acc + curr.tamanhoTalhao, 0);
+    const totalHectares = talhoesTotal.reduce(
+      (acc, curr) => acc + curr.tamanhoTalhao,
+      0,
+    );
     const totalSafra = talhoesTotal.reduce((acc, curr) => acc + curr.total, 0);
     const sacasSafra = Number((totalSafra / 60).toFixed(2));
-    const totalPorHectareSafra = Number((totalSafra / totalHectares).toFixed(2));
-    const sacasPorHectareSafra = Number(((totalSafra / 60) / totalHectares).toFixed(2));
+    const totalPorHectareSafra = Number(
+      (totalSafra / totalHectares).toFixed(2),
+    );
+    const sacasPorHectareSafra = Number(
+      (totalSafra / 60 / totalHectares).toFixed(2),
+    );
 
-    response.json({ totalSafra, sacasSafra, totalPorHectareSafra, sacasPorHectareSafra, talhoesTotal });
+    response.json({
+      totalSafra,
+      sacasSafra,
+      totalPorHectareSafra,
+      sacasPorHectareSafra,
+      talhoesTotal,
+    });
   }
 
   async descontoTotal(request: Request, response: Response) {
@@ -38,19 +56,34 @@ class ColheitaController {
 
     const parsedIdSafra = Number(idSafra);
 
-    const talhoesDescontoTotal = await ColheitaRepository.findDescontoTotal(parsedIdSafra, desconto);
+    const talhoesDescontoTotal = await ColheitaRepository.findDescontoTotal(
+      request.databaseName,
+      parsedIdSafra,
+      desconto,
+    );
 
-    const pesoTotalSafra = talhoesDescontoTotal.reduce((acc, curr) => acc + curr.pesoTotal, 0);
-    const totalDescontoSafra = talhoesDescontoTotal.reduce((acc, curr) => acc + curr.descontoTotal, 0);
-    const porcentagemDescontoSafra = Number(((totalDescontoSafra * 100) / pesoTotalSafra).toFixed(2));
-    const totalDescontoRealSafra = talhoesDescontoTotal.reduce((acc, curr) => acc + curr.descontoReal, 0);
+    const pesoTotalSafra = talhoesDescontoTotal.reduce(
+      (acc, curr) => acc + curr.pesoTotal,
+      0,
+    );
+    const totalDescontoSafra = talhoesDescontoTotal.reduce(
+      (acc, curr) => acc + curr.descontoTotal,
+      0,
+    );
+    const porcentagemDescontoSafra = Number(
+      ((totalDescontoSafra * 100) / pesoTotalSafra).toFixed(2),
+    );
+    const totalDescontoRealSafra = talhoesDescontoTotal.reduce(
+      (acc, curr) => acc + curr.descontoReal,
+      0,
+    );
 
     response.json({
       pesoTotalSafra,
       totalDescontoSafra,
       porcentagemDescontoSafra,
       totalDescontoRealSafra,
-      talhoesDescontoTotal
+      talhoesDescontoTotal,
     });
   }
 }

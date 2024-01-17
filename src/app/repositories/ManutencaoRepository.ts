@@ -11,9 +11,13 @@ interface FindInputsBySafraArgs {
 }
 
 class ManutencaoRepository {
-  findInputsBySafra({ idSafra, idTalhao, startDate, endDate }: FindInputsBySafraArgs) {
+  findInputsBySafra(
+    databaseName: string,
+    { idSafra, idTalhao, startDate, endDate }: FindInputsBySafraArgs,
+  ) {
     return new Promise<InputsBySafraDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           produto_almoxarifado.nome as insumo,
@@ -39,14 +43,17 @@ class ManutencaoRepository {
         ${endDate ? `and manutencao_m.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         group by insumo, unidade
         order by total desc
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map((item) => ManutencaoMapper.toInputsBySafraDomain(item)));
-        }
+          resolve(
+            result.map((item) => ManutencaoMapper.toInputsBySafraDomain(item)),
+          );
+        },
       );
     });
   }

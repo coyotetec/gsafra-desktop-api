@@ -1,13 +1,13 @@
 export interface AlmoxarifadoPersistence {
   ID: number;
-  NOME: string,
+  NOME: string;
   ID_FAZENDA: number;
   STATUS: number;
 }
 
 export interface AlmoxarifadoDomain {
   id: number;
-  nome: string,
+  nome: string;
   idFazenda: number;
   status: number;
 }

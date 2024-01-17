@@ -3,7 +3,9 @@ import PatrimonioRepository from '../repositories/PatrimonioRepository';
 
 class PatrimonioController {
   async index(request: Request, response: Response) {
-    const patrimonios = await PatrimonioRepository.findAll();
+    const patrimonios = await PatrimonioRepository.findAll(
+      request.databaseName,
+    );
 
     response.json(patrimonios);
   }

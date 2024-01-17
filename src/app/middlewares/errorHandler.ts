@@ -4,7 +4,7 @@ export default (
   error: Error,
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   console.log(error);
   response.sendStatus(500);

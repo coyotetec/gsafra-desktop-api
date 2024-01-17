@@ -1,4 +1,7 @@
-import { TipoPatrimonioDomain, TipoPatrimonioPersistence } from '../../../types/TipoPatrimonioTypes';
+import {
+  TipoPatrimonioDomain,
+  TipoPatrimonioPersistence,
+} from '../../../types/TipoPatrimonioTypes';
 
 class TipoPatrimonioMapper {
   toDomain(persistence: TipoPatrimonioPersistence): TipoPatrimonioDomain {

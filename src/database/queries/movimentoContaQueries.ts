@@ -1,4 +1,8 @@
-export const accountMovementsQuery = (codigo: string, startDate?: string, endDate?: string) => `
+export const accountMovementsQuery = (
+  codigo: string,
+  startDate?: string,
+  endDate?: string,
+) => `
 select
   movimento_conta_m.data_compensacao as data,
   movimento_conta.valor as valor_total,
@@ -29,7 +33,12 @@ ${startDate ? `and movimento_conta_m.data_compensacao >= '${startDate}'` : ''}
 ${endDate ? `and movimento_conta_m.data_compensacao <= '${endDate}'` : ''}
 `;
 
-export const accountMovementsBySafraQuery = (codigo: string, idSafra: string, startDate?: string, endDate?: string) => `
+export const accountMovementsBySafraQuery = (
+  codigo: string,
+  idSafra: string,
+  startDate?: string,
+  endDate?: string,
+) => `
 select
   movimento_conta_m.data_compensacao as data,
   movimento_conta.valor as valor_total,

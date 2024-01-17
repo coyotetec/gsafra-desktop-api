@@ -2,10 +2,15 @@ interface custoCategoriaQueryArgs {
   idSafra: string;
   idTalhao?: number;
   startDate?: string;
-  endDate?: string
+  endDate?: string;
 }
 
-export const custoCategoriaQuery = ({idSafra, idTalhao, startDate, endDate}: custoCategoriaQueryArgs) => `
+export const custoCategoriaQuery = ({
+  idSafra,
+  idTalhao,
+  startDate,
+  endDate,
+}: custoCategoriaQueryArgs) => `
 select
     coalesce(cast(sum(abastecimento_ciclo_ts.valor) as numeric(15,2)), 0) as total,
     'Abastecimento' as categoria
@@ -16,7 +21,7 @@ where abastecimento.status_processamento = 2
 and abastecimento_ciclo.id_ciclo_producao in (${idSafra})
 ${idTalhao ? `and abastecimento_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
 ${startDate ? `and abastecimento.data >= '${startDate}'` : ''}
-${endDate ? `and abastecimento.data <= '${endDate}'` :  ''}
+${endDate ? `and abastecimento.data <= '${endDate}'` : ''}
 
 union
 
@@ -93,7 +98,12 @@ ${startDate ? `and agri_atv.data_inicio >= '${startDate}'` : ''}
 ${endDate ? `and agri_atv.data_inicio <= '${endDate}'` : ''}
 `;
 
-export const custoPorTalhaoQuery = ({idSafra, idTalhao, startDate, endDate}: custoCategoriaQueryArgs) => `
+export const custoPorTalhaoQuery = ({
+  idSafra,
+  idTalhao,
+  startDate,
+  endDate,
+}: custoCategoriaQueryArgs) => `
 select
   sum(total) as total,
   talhao,
@@ -118,7 +128,7 @@ from(
   and abastecimento_ciclo.id_ciclo_producao in (${idSafra})
   ${idTalhao ? `and abastecimento_ciclo_ts.id_talhao_safra = ${idTalhao}` : ''}
   ${startDate ? `and abastecimento.data >= '${startDate}'` : ''}
-  ${endDate ? `and abastecimento.data <= '${endDate}'` :  ''}
+  ${endDate ? `and abastecimento.data <= '${endDate}'` : ''}
   group by talhao, variedade, area, safra
 
   union all

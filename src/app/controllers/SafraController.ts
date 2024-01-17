@@ -3,7 +3,7 @@ import SafraRepository from '../repositories/SafraRepository';
 
 class SafraController {
   async index(request: Request, response: Response) {
-    const safras = await SafraRepository.findAll();
+    const safras = await SafraRepository.findAll(request.databaseName);
 
     response.json(safras);
   }

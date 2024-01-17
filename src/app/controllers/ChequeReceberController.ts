@@ -6,16 +6,22 @@ import ChequeRepository from '../repositories/ChequeRepository';
 class ChequeReceberController {
   async total(request: Request, response: Response) {
     const { startDate, endDate, idSafra } = request.query as {
-      startDate?: string,
-      endDate?: string,
-      idSafra?: string
+      startDate?: string;
+      endDate?: string;
+      idSafra?: string;
     };
 
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     let totalNextSeven: TotalDomain = {
@@ -27,7 +33,7 @@ class ChequeReceberController {
       quantity: 0,
     };
 
-    const total = await ChequeRepository.findTotal({
+    const total = await ChequeRepository.findTotal(request.databaseName, {
       tipo: 'receber',
       period: 0,
       startDate: parsedStartDate,
@@ -37,27 +43,27 @@ class ChequeReceberController {
 
     if (parsedStartDate) {
       [totalNextSeven, totalNextFifteen] = await Promise.all([
-        ChequeRepository.findTotal({
+        ChequeRepository.findTotal(request.databaseName, {
           tipo: 'receber',
           period: 7,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
           idSafra,
         }),
-        ChequeRepository.findTotal({
+        ChequeRepository.findTotal(request.databaseName, {
           tipo: 'receber',
           period: 15,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
           idSafra,
-        })
+        }),
       ]);
     }
 
     response.json({
       ...total,
-      totalNextSeven: totalNextSeven,
-      totalNextFifteen: totalNextFifteen,
+      totalNextSeven,
+      totalNextFifteen,
     });
   }
 }

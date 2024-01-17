@@ -6,7 +6,14 @@ import { parseEstoqueGraosProdutor } from '../utils/parseEstoqueGraosProdutor';
 
 class EstoqueGraosController {
   async total(request: Request, response: Response) {
-    const { idCultura, startDate, endDate, idProdutor, idArmazenamento, idSafra } = request.query as {
+    const {
+      idCultura,
+      startDate,
+      endDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    } = request.query as {
       idCultura?: string;
       startDate?: string;
       endDate?: string;
@@ -20,54 +27,73 @@ class EstoqueGraosController {
     }
 
     const parsedIdCultura = Number(idCultura);
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
     const parsedIdProdutor = idProdutor ? Number(idProdutor) : undefined;
-    const parsedIdArmazenamento = idArmazenamento ? Number(idArmazenamento) : undefined;
+    const parsedIdArmazenamento = idArmazenamento
+      ? Number(idArmazenamento)
+      : undefined;
     const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     let saldoAnterior = 0;
 
     if (parsedStartDate) {
-      saldoAnterior = await EstoqueGraosRepository.findSaldoAnterior({
-        idCultura: parsedIdCultura,
-        startDate: parsedStartDate,
-        idProdutor: parsedIdProdutor,
-        idArmazenamento: parsedIdArmazenamento,
-        idSafra: parsedIdSafra
-      });
+      saldoAnterior = await EstoqueGraosRepository.findSaldoAnterior(
+        request.databaseName,
+        {
+          idCultura: parsedIdCultura,
+          startDate: parsedStartDate,
+          idProdutor: parsedIdProdutor,
+          idArmazenamento: parsedIdArmazenamento,
+          idSafra: parsedIdSafra,
+        },
+      );
     }
 
     const [entradas, saidas] = await Promise.all([
-      EstoqueGraosRepository.findEntradas({
+      EstoqueGraosRepository.findEntradas(request.databaseName, {
         idCultura: parsedIdCultura,
         startDate: parsedStartDate,
         endDate: parsedEndDate,
         idProdutor: parsedIdProdutor,
         idArmazenamento: parsedIdArmazenamento,
-        idSafra: parsedIdSafra
+        idSafra: parsedIdSafra,
       }),
-      EstoqueGraosRepository.findSaidas({
+      EstoqueGraosRepository.findSaidas(request.databaseName, {
         idCultura: parsedIdCultura,
         startDate: parsedStartDate,
         endDate: parsedEndDate,
         idProdutor: parsedIdProdutor,
         idArmazenamento: parsedIdArmazenamento,
-        idSafra: parsedIdSafra
-      })
+        idSafra: parsedIdSafra,
+      }),
     ]);
 
-    const saldoFinal = saldoAnterior + entradas.pesoLiquido - saidas.pesoLiquido;
+    const saldoFinal =
+      saldoAnterior + entradas.pesoLiquido - saidas.pesoLiquido;
 
     response.json({ saldoAnterior, entradas, saidas, saldoFinal });
   }
 
   async totalProdutor(request: Request, response: Response) {
-    const { idCultura, startDate, endDate, idProdutor, idArmazenamento, idSafra } = request.query as {
+    const {
+      idCultura,
+      startDate,
+      endDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    } = request.query as {
       idCultura?: string;
       startDate?: string;
       endDate?: string;
@@ -81,55 +107,72 @@ class EstoqueGraosController {
     }
 
     const parsedIdCultura = Number(idCultura);
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
     const parsedIdProdutor = idProdutor ? Number(idProdutor) : undefined;
-    const parsedIdArmazenamento = idArmazenamento ? Number(idArmazenamento) : undefined;
+    const parsedIdArmazenamento = idArmazenamento
+      ? Number(idArmazenamento)
+      : undefined;
     const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     const [entradas, saidas] = await Promise.all([
-      EstoqueGraosRepository.findEntradasProdutor({
+      EstoqueGraosRepository.findEntradasProdutor(request.databaseName, {
         idCultura: parsedIdCultura,
         startDate: parsedStartDate,
         endDate: parsedEndDate,
         idProdutor: parsedIdProdutor,
         idArmazenamento: parsedIdArmazenamento,
-        idSafra: parsedIdSafra
+        idSafra: parsedIdSafra,
       }),
-      EstoqueGraosRepository.findSaidasProdutor({
+      EstoqueGraosRepository.findSaidasProdutor(request.databaseName, {
         idCultura: parsedIdCultura,
         startDate: parsedStartDate,
         endDate: parsedEndDate,
         idProdutor: parsedIdProdutor,
         idArmazenamento: parsedIdArmazenamento,
-        idSafra: parsedIdSafra
-      })
+        idSafra: parsedIdSafra,
+      }),
     ]);
 
     let saldoAnterior: SaldoProdutorDomain[] = [];
 
     if (parsedStartDate) {
-      saldoAnterior = await EstoqueGraosRepository.findSaldoAnteriorProdutor({
-        idCultura: parsedIdCultura,
-        startDate: parsedStartDate,
-        idProdutor: parsedIdProdutor,
-        idArmazenamento: parsedIdArmazenamento,
-        idSafra: parsedIdSafra
-      });
+      saldoAnterior = await EstoqueGraosRepository.findSaldoAnteriorProdutor(
+        request.databaseName,
+        {
+          idCultura: parsedIdCultura,
+          startDate: parsedStartDate,
+          idProdutor: parsedIdProdutor,
+          idArmazenamento: parsedIdArmazenamento,
+          idSafra: parsedIdSafra,
+        },
+      );
     }
 
-    const estoqueGraosProdutor = parseEstoqueGraosProdutor(entradas, saidas, saldoAnterior);
+    const estoqueGraosProdutor = parseEstoqueGraosProdutor(
+      entradas,
+      saidas,
+      saldoAnterior,
+    );
 
-    const saldoFinal = estoqueGraosProdutor.map((item) => ({
-      idProdutor: item.idProdutor,
-      produtor: item.produtor,
-      saldo: item.saldoFinal,
-      saldoSacas: item.saldoFinal / 60
-    })).sort((a, b) => b.saldo - a.saldo);
+    const saldoFinal = estoqueGraosProdutor
+      .map((item) => ({
+        idProdutor: item.idProdutor,
+        produtor: item.produtor,
+        saldo: item.saldoFinal,
+        saldoSacas: item.saldoFinal / 60,
+      }))
+      .sort((a, b) => b.saldo - a.saldo);
 
     response.json({ estoqueGraosProdutor, saldoFinal });
   }

@@ -2,7 +2,8 @@ import database from '../../database';
 import { DescontoTotalDomain, TotalDomain } from '../../types/ColheitaTypes';
 import ColheitaMapper from './mappers/ColheitaMapper';
 
-export type descontoType = 'umidade'
+export type descontoType =
+  | 'umidade'
   | 'impureza'
   | 'avariados'
   | 'quebrados'
@@ -11,9 +12,10 @@ export type descontoType = 'umidade'
   | 'cota';
 
 class ColheitaRepository {
-  findTotal(idSafra: number) {
+  findTotal(databaseName: string, idSafra: number) {
     return new Promise<TotalDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           coalesce(sum(colheita_talhao.peso_liquido + colheita_talhao.cota_desc_kg + colheita_talhao.taxa_recepcao_desc_kg), 0) as total_producao,
@@ -27,52 +29,86 @@ class ColheitaRepository {
         and colheita.tipo_romaneio = 1
         and colheita.situacao = 2
         group by talhao, tamanho_talhao
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map(item => ColheitaMapper.toTotalDomain(item)));
-        }
+          resolve(result.map((item) => ColheitaMapper.toTotalDomain(item)));
+        },
       );
     });
   }
 
-  findDescontoTotal(idSafra: number, desconto: descontoType) {
+  findDescontoTotal(
+    databaseName: string,
+    idSafra: number,
+    desconto: descontoType,
+  ) {
     return new Promise<DescontoTotalDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           coalesce(sum(colheita_talhao.peso), 0) as peso_total,
-          ${desconto === 'umidade' ? `
+          ${
+            desconto === 'umidade'
+              ? `
           coalesce(sum((colheita.umidade_classificacao / 100) * colheita_talhao.peso), 0) as desconto_total,
           coalesce(sum(colheita_talhao.umidade_desc_kg), 0) as desconto_real,
-          ` : ''}
-          ${desconto === 'impureza' ? `
+          `
+              : ''
+          }
+          ${
+            desconto === 'impureza'
+              ? `
           coalesce(sum((colheita.impureza_classificacao / 100) * colheita_talhao.peso), 0) as desconto_total,
           coalesce(sum(colheita_talhao.impureza_desc_kg), 0) as desconto_real,
-          ` : ''}
-          ${desconto === 'avariados' ? `
+          `
+              : ''
+          }
+          ${
+            desconto === 'avariados'
+              ? `
           coalesce(sum((colheita.avariados_classificacao / 100) * colheita_talhao.peso), 0) as desconto_total,
           coalesce(sum(colheita_talhao.avariados_desc_kg), 0) as desconto_real,
-          ` : ''}
-          ${desconto === 'quebrados' ? `
+          `
+              : ''
+          }
+          ${
+            desconto === 'quebrados'
+              ? `
           coalesce(sum((colheita.quebrado_classificacao / 100) * colheita_talhao.peso), 0) as desconto_total,
           coalesce(sum(colheita_talhao.quebrado_desc_kg), 0) as desconto_real,
-          ` : ''}
-          ${desconto === 'esverdeados' ? `
+          `
+              : ''
+          }
+          ${
+            desconto === 'esverdeados'
+              ? `
           coalesce(sum((colheita.esverdeados_classificacao / 100) * colheita_talhao.peso), 0) as desconto_total,
           coalesce(sum(colheita_talhao.esverdeados_desc_kg), 0) as desconto_real,
-          ` : ''}
-          ${desconto === 'taxa_recepcao' ? `
+          `
+              : ''
+          }
+          ${
+            desconto === 'taxa_recepcao'
+              ? `
           coalesce(sum((colheita.taxa_recepcao_classificacao / 100) * colheita_talhao.peso), 0) as desconto_total,
           coalesce(sum(colheita_talhao.taxa_recepcao_desc_kg), 0) as desconto_real,
-          ` : ''}
-          ${desconto === 'cota' ? `
+          `
+              : ''
+          }
+          ${
+            desconto === 'cota'
+              ? `
           coalesce(sum((colheita.cota_classificacao / 100) * colheita_talhao.peso), 0) as desconto_total,
           coalesce(sum(colheita_talhao.cota_desc_kg), 0) as desconto_real,
-          ` : ''}
+          `
+              : ''
+          }
           talhao.descricao as talhao
         from colheita_talhao
         inner join colheita on colheita.id = colheita_talhao.id_colheita
@@ -82,14 +118,17 @@ class ColheitaRepository {
         and colheita.tipo_romaneio = 1
         and colheita.situacao = 2
         group by talhao
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map(item => ColheitaMapper.toDescontoTotalDomain(item)));
-        }
+          resolve(
+            result.map((item) => ColheitaMapper.toDescontoTotalDomain(item)),
+          );
+        },
       );
     });
   }

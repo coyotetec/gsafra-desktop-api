@@ -1,6 +1,11 @@
 import { format } from 'date-fns';
 import database from '../../database';
-import { PrecoMedioClienteDomain, PrecoMedioMesDomain, RomaneioDomain, VendaDomain } from '../../types/VendaTypes';
+import {
+  PrecoMedioClienteDomain,
+  PrecoMedioMesDomain,
+  RomaneioDomain,
+  VendaDomain,
+} from '../../types/VendaTypes';
 import VendaMapper from './mappers/VendaMapper';
 
 interface FindVendasArgs {
@@ -11,9 +16,13 @@ interface FindVendasArgs {
 }
 
 class VendaRepository {
-  findAll({idSafra, startDate, endDate, situacao}: FindVendasArgs) {
+  findAll(
+    databaseName: string,
+    { idSafra, startDate, endDate, situacao }: FindVendasArgs,
+  ) {
     return new Promise<VendaDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           pessoa.id as id_cliente,
@@ -37,21 +46,26 @@ class VendaRepository {
         ${situacao ? `and venda_agricultura.situacao = ${situacao}` : ''}
         group by id_cliente, cliente
         order by total desc
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.map((item) => VendaMapper.toDomain(item)));
-        }
+        },
       );
     });
   }
 
-  findRomaneios({idSafra, startDate, endDate, situacao}: FindVendasArgs) {
+  findRomaneios(
+    databaseName: string,
+    { idSafra, startDate, endDate, situacao }: FindVendasArgs,
+  ) {
     return new Promise<RomaneioDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           pessoa.razao_social as cliente,
@@ -72,21 +86,26 @@ class VendaRepository {
         ${endDate ? `and venda_agricultura.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         ${situacao ? `and venda_agricultura.situacao = ${situacao}` : ''}
         order by cliente, data
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.map((item) => VendaMapper.toRomaneioDomain(item)));
-        }
+        },
       );
     });
   }
 
-  findPrecoMedioCliente({idSafra, startDate, endDate, situacao}: FindVendasArgs) {
+  findPrecoMedioCliente(
+    databaseName: string,
+    { idSafra, startDate, endDate, situacao }: FindVendasArgs,
+  ) {
     return new Promise<PrecoMedioClienteDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           pessoa.razao_social as cliente,
@@ -100,21 +119,28 @@ class VendaRepository {
         ${situacao ? `and venda_agricultura.situacao = ${situacao}` : ''}
         group by cliente
         order by preco_medio_kg desc
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map((item) => VendaMapper.toPrecoMedioClienteDomain(item)));
-        }
+          resolve(
+            result.map((item) => VendaMapper.toPrecoMedioClienteDomain(item)),
+          );
+        },
       );
     });
   }
 
-  findPrecoMedioMes({idSafra, startDate, endDate, situacao}: FindVendasArgs) {
+  findPrecoMedioMes(
+    databaseName: string,
+    { idSafra, startDate, endDate, situacao }: FindVendasArgs,
+  ) {
     return new Promise<PrecoMedioMesDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           extract(month from venda_agricultura.data) as mes,
@@ -129,14 +155,17 @@ class VendaRepository {
         ${situacao ? `and venda_agricultura.situacao = ${situacao}` : ''}
         group by mes, ano
         order by ano, mes
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map((item) => VendaMapper.toPrecoMedioMesDomain(item)));
-        }
+          resolve(
+            result.map((item) => VendaMapper.toPrecoMedioMesDomain(item)),
+          );
+        },
       );
     });
   }

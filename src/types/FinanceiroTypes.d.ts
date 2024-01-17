@@ -10,4 +10,4 @@ export interface CashFlowDomain {
   ano: number;
 }
 
-export type financialStatus = 'real' | 'provisional'
+export type financialStatus = 'real' | 'provisional';

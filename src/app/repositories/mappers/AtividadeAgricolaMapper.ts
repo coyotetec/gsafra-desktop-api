@@ -1,12 +1,17 @@
-import { InputsBySafraDomain, InputsBySafraPersistence } from '../../../types/AtividadeAgricolaTypes';
+import {
+  InputsBySafraDomain,
+  InputsBySafraPersistence,
+} from '../../../types/AtividadeAgricolaTypes';
 
 class AtividadeAgricolaMapper {
-  toInputsBySafraDomain(persistence: InputsBySafraPersistence): InputsBySafraDomain {
+  toInputsBySafraDomain(
+    persistence: InputsBySafraPersistence,
+  ): InputsBySafraDomain {
     return {
       insumo: persistence.INSUMO,
       total: persistence.TOTAL,
       quantidade: persistence.QUANTIDADE,
-      unidade: persistence.UNIDADE
+      unidade: persistence.UNIDADE,
     };
   }
 }

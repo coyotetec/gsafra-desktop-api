@@ -1,6 +1,9 @@
 import { format } from 'date-fns';
 import database from '../../database';
-import { accountMovementsBySafraQuery, accountMovementsQuery } from '../../database/queries/movimentoContaQueries';
+import {
+  accountMovementsBySafraQuery,
+  accountMovementsQuery,
+} from '../../database/queries/movimentoContaQueries';
 import MovimentoContaMapper from './mappers/MovimentoContaMapper';
 
 interface FindAllArgs {
@@ -11,7 +14,10 @@ interface FindAllArgs {
 }
 
 class MovimentoContaRepository {
-  findAll({ codigo, startDate, endDate, idSafra }: FindAllArgs) {
+  findAll(
+    databaseName: string,
+    { codigo, startDate, endDate, idSafra }: FindAllArgs,
+  ) {
     return new Promise((resolve, reject) => {
       let query = accountMovementsQuery(
         codigo,
@@ -28,18 +34,17 @@ class MovimentoContaRepository {
         );
       }
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((movimentoConta) => (
-            MovimentoContaMapper.toMovimentoContaDomain(movimentoConta)
-          )));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((movimentoConta) =>
+            MovimentoContaMapper.toMovimentoContaDomain(movimentoConta),
+          ),
+        );
+      });
     });
   }
 }

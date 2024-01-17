@@ -1,4 +1,9 @@
-import { ContratoDomain, ContratoPersistence, RomaneioDomain, RomaneioPersistence } from '../../../types/ContratoTypes';
+import {
+  ContratoDomain,
+  ContratoPersistence,
+  RomaneioDomain,
+  RomaneioPersistence,
+} from '../../../types/ContratoTypes';
 
 class ContratoMapper {
   toDomain(persistence: ContratoPersistence): ContratoDomain {
@@ -8,9 +13,11 @@ class ContratoMapper {
       numeroContrato: persistence.NUMERO_CONTRATO,
       totalContrato: persistence.TOTAL_CONTRATO,
       totalEntregue: persistence.TOTAL_ENTREGUE,
-      porcentagem: (persistence.TOTAL_ENTREGUE * 100) / persistence.TOTAL_CONTRATO
+      porcentagem:
+        (persistence.TOTAL_ENTREGUE * 100) / persistence.TOTAL_CONTRATO,
     };
   }
+
   toRomaneioDomain(persistence: RomaneioPersistence): RomaneioDomain {
     return {
       data: persistence.DATA,

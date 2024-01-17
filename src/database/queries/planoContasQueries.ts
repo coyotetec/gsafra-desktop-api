@@ -1,6 +1,10 @@
 import { financialStatus } from '../../types/FinanceiroTypes';
 
-export const paymentsQuery = (startDate: string, endDate: string, status?: financialStatus) => `
+export const paymentsQuery = (
+  startDate: string,
+  endDate: string,
+  status?: financialStatus,
+) => `
 select
 plano_conta.codigo as codigo,
 sum(crp_apropriacao.valor) * -1 as total,
@@ -18,7 +22,11 @@ and crp_m.tipo = 2
 group by codigo, ano, mes
 `;
 
-export const receivablesQuery = (startDate: string, endDate: string, status?: financialStatus) => `
+export const receivablesQuery = (
+  startDate: string,
+  endDate: string,
+  status?: financialStatus,
+) => `
 select
 plano_conta.codigo as codigo,
 sum(crp_apropriacao.valor) as total,
@@ -36,7 +44,11 @@ and crp_m.tipo = 1
 group by codigo, ano, mes
 `;
 
-export const checksQuery = (startDate: string, endDate: string, status?: financialStatus) => `
+export const checksQuery = (
+  startDate: string,
+  endDate: string,
+  status?: financialStatus,
+) => `
 select
 plano_conta.codigo as codigo,
 sum(

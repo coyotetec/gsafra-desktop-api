@@ -6,14 +6,18 @@ class UsuarioController {
   async permissions(request: Request, response: Response) {
     const { id } = request.params;
 
-    let permissionsList: string[]  = [];
+    let permissionsList: string[] = [];
 
     if (id === '0') {
-      permissionsList = await DashboardSecaoRepository.findAllCodigos();
+      permissionsList = await DashboardSecaoRepository.findAllCodigos(
+        request.databaseName,
+      );
     } else {
-      permissionsList = await UsuarioRepository.findPermissions(Number(id));
+      permissionsList = await UsuarioRepository.findPermissions(
+        request.databaseName,
+        Number(id),
+      );
     }
-
 
     response.json(permissionsList);
   }

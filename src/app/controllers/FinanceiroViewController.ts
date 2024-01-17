@@ -1,12 +1,15 @@
 import { format, parse } from 'date-fns';
 import { Request, Response } from 'express';
-import { viewDetailQuery, viewTotalQuery } from '../../database/queries/financeiroViewQueries';
+import {
+  viewDetailQuery,
+  viewTotalQuery,
+} from '../../database/queries/financeiroViewQueries';
 import FinanceiroViewRepository from '../repositories/FinanceiroViewRepository';
 import { executeFomula } from '../utils/executeFormula';
 
 class FinanceiroViewController {
   async index(request: Request, response: Response) {
-    const views = await FinanceiroViewRepository.findAll();
+    const views = await FinanceiroViewRepository.findAll(request.databaseName);
 
     response.json(views);
   }
@@ -14,33 +17,50 @@ class FinanceiroViewController {
   async findDetail(request: Request, response: Response) {
     const { id } = request.params;
     const { startDate, endDate } = request.query as {
-      startDate?: string,
-      endDate?: string,
+      startDate?: string;
+      endDate?: string;
     };
 
     if (!id) {
       return response.status(400).json({ message: 'Id da view é obrigatório' });
     }
 
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const viewColumns = await FinanceiroViewRepository.findViewColumns(Number(id));
+    const viewColumns = await FinanceiroViewRepository.findViewColumns(
+      request.databaseName,
+      Number(id),
+    );
 
     const data = [];
 
     for (const viewColumn of viewColumns) {
       const query = viewDetailQuery({
         viewColumn,
-        startDate: parsedStartDate ? format(parsedStartDate, 'yyyy-MM-dd') : undefined,
-        endDate: parsedEndDate ? format(parsedEndDate, 'yyyy-MM-dd') : undefined,
+        startDate: parsedStartDate
+          ? format(parsedStartDate, 'yyyy-MM-dd')
+          : undefined,
+        endDate: parsedEndDate
+          ? format(parsedEndDate, 'yyyy-MM-dd')
+          : undefined,
       });
 
-      const viewDetails = await FinanceiroViewRepository.findViewDetails(viewColumn.nome, query);
+      const viewDetails = await FinanceiroViewRepository.findViewDetails(
+        request.databaseName,
+        viewColumn.nome,
+        query,
+      );
 
       data.push(...viewDetails);
     }
@@ -51,24 +71,36 @@ class FinanceiroViewController {
   async find(request: Request, response: Response) {
     const { id } = request.params;
     const { startDate, endDate } = request.query as {
-      startDate?: string,
-      endDate?: string,
+      startDate?: string;
+      endDate?: string;
     };
 
     if (!id) {
       return response.status(400).json({ message: 'Id da view é obrigatório' });
     }
 
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     const [viewColumns, totalizadores] = await Promise.all([
-      FinanceiroViewRepository.findViewColumns(Number(id)),
-      FinanceiroViewRepository.findTotalizadores(Number(id))
+      FinanceiroViewRepository.findViewColumns(
+        request.databaseName,
+        Number(id),
+      ),
+      FinanceiroViewRepository.findTotalizadores(
+        request.databaseName,
+        Number(id),
+      ),
     ]);
 
     const viewData = [];
@@ -77,11 +109,18 @@ class FinanceiroViewController {
     for (const viewColumn of viewColumns) {
       const query = viewTotalQuery({
         viewColumn,
-        startDate: parsedStartDate ? format(parsedStartDate, 'yyyy-MM-dd') : undefined,
-        endDate: parsedEndDate ? format(parsedEndDate, 'yyyy-MM-dd') : undefined,
+        startDate: parsedStartDate
+          ? format(parsedStartDate, 'yyyy-MM-dd')
+          : undefined,
+        endDate: parsedEndDate
+          ? format(parsedEndDate, 'yyyy-MM-dd')
+          : undefined,
       });
 
-      const viewTotal = await FinanceiroViewRepository.findViewTotal(query);
+      const viewTotal = await FinanceiroViewRepository.findViewTotal(
+        request.databaseName,
+        query,
+      );
 
       viewData.push({
         id: viewColumn.id,
@@ -106,7 +145,7 @@ class FinanceiroViewController {
       if (['Infinity', '-Infinity', 'NaN'].includes(result)) {
         totalizadoresData.push({
           nome: totalizador.totalizadorNome,
-          error: 'Erro na fórmula.'
+          error: 'Erro na fórmula.',
         });
         continue;
       }
@@ -114,7 +153,7 @@ class FinanceiroViewController {
       totalizadoresData.push({
         nome: totalizador.totalizadorNome,
         total: result,
-        formato: totalizador.formato
+        formato: totalizador.formato,
       });
     }
 

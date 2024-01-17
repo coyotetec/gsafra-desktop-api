@@ -7,18 +7,24 @@ import { financialStatus } from '../../types/FinanceiroTypes';
 class ContaPagarController {
   async total(request: Request, response: Response) {
     const { startDate, endDate, idSafra, status } = request.query as {
-      startDate?: string,
-      endDate?: string,
-      idSafra?: string,
-      status?: financialStatus,
+      startDate?: string;
+      endDate?: string;
+      idSafra?: string;
+      status?: financialStatus;
     };
 
     // const parsedIdSafra = idSafra ? Number(idSafra) : undefined;
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     let totalNextSeven: TotalDomain = {
@@ -30,7 +36,7 @@ class ContaPagarController {
       quantity: 0,
     };
 
-    const total = await FinanceiroRepository.findTotal({
+    const total = await FinanceiroRepository.findTotal(request.databaseName, {
       tipo: 'pagar',
       period: 0,
       status,
@@ -41,7 +47,7 @@ class ContaPagarController {
 
     if (parsedStartDate) {
       [totalNextSeven, totalNextFifteen] = await Promise.all([
-        FinanceiroRepository.findTotal({
+        FinanceiroRepository.findTotal(request.databaseName, {
           tipo: 'pagar',
           period: 7,
           status,
@@ -49,21 +55,21 @@ class ContaPagarController {
           endDate: parsedEndDate,
           idSafra,
         }),
-        FinanceiroRepository.findTotal({
+        FinanceiroRepository.findTotal(request.databaseName, {
           tipo: 'pagar',
           period: 15,
           status,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
           idSafra,
-        })
+        }),
       ]);
     }
 
     response.json({
       ...total,
-      totalNextSeven: totalNextSeven,
-      totalNextFifteen: totalNextFifteen,
+      totalNextSeven,
+      totalNextFifteen,
     });
   }
 }

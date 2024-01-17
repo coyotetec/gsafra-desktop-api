@@ -1,4 +1,15 @@
-import { EntradasGraosDomain, EntradasGraosPersistence, EntradasGraosProdutorDomain, EntradasGraosProdutorPersistence, SaidasGraosDomain, SaidasGraosPersistence, SaidasGraosProdutorDomain, SaidasGraosProdutorPersistence, SaldoProdutorDomain, SaldoProdutorPersistence } from '../../../types/EstoqueGraos';
+import {
+  EntradasGraosDomain,
+  EntradasGraosPersistence,
+  EntradasGraosProdutorDomain,
+  EntradasGraosProdutorPersistence,
+  SaidasGraosDomain,
+  SaidasGraosPersistence,
+  SaidasGraosProdutorDomain,
+  SaidasGraosProdutorPersistence,
+  SaldoProdutorDomain,
+  SaldoProdutorPersistence,
+} from '../../../types/EstoqueGraos';
 
 class EstoqueGraosMapper {
   toEntradaDomain(persistence: EntradasGraosPersistence): EntradasGraosDomain {
@@ -9,13 +20,13 @@ class EstoqueGraosMapper {
       cotaCapital: persistence.COTA_CAPITAL,
       taxaArmazenamento: persistence.TAXA_ARMAZENAMENTO,
       quebraTecnica: persistence.QUEBRA_TECNICA,
-      pesoLiquido: persistence.PESO - (
-        persistence.DESCONTO_CLASSIFICACAO +
-        persistence.TAXA_RECEPCAO +
-        persistence.COTA_CAPITAL +
-        persistence.TAXA_ARMAZENAMENTO +
-        persistence.QUEBRA_TECNICA
-      )
+      pesoLiquido:
+        persistence.PESO -
+        (persistence.DESCONTO_CLASSIFICACAO +
+          persistence.TAXA_RECEPCAO +
+          persistence.COTA_CAPITAL +
+          persistence.TAXA_ARMAZENAMENTO +
+          persistence.QUEBRA_TECNICA),
     };
   }
 
@@ -23,11 +34,13 @@ class EstoqueGraosMapper {
     return {
       peso: persistence.PESO,
       descontoClassificacao: persistence.DESCONTO_CLASSIFICACAO,
-      pesoLiquido: persistence.PESO - persistence.DESCONTO_CLASSIFICACAO
+      pesoLiquido: persistence.PESO - persistence.DESCONTO_CLASSIFICACAO,
     };
   }
 
-  toEntradaProdutorDomain(persistence: EntradasGraosProdutorPersistence): EntradasGraosProdutorDomain {
+  toEntradaProdutorDomain(
+    persistence: EntradasGraosProdutorPersistence,
+  ): EntradasGraosProdutorDomain {
     return {
       idProdutor: persistence.ID_PRODUTOR,
       produtor: persistence.PRODUTOR,
@@ -37,31 +50,35 @@ class EstoqueGraosMapper {
       cotaCapital: persistence.COTA_CAPITAL,
       taxaArmazenamento: persistence.TAXA_ARMAZENAMENTO,
       quebraTecnica: persistence.QUEBRA_TECNICA,
-      pesoLiquido: persistence.PESO - (
-        persistence.DESCONTO_CLASSIFICACAO +
-        persistence.TAXA_RECEPCAO +
-        persistence.COTA_CAPITAL +
-        persistence.TAXA_ARMAZENAMENTO +
-        persistence.QUEBRA_TECNICA
-      )
+      pesoLiquido:
+        persistence.PESO -
+        (persistence.DESCONTO_CLASSIFICACAO +
+          persistence.TAXA_RECEPCAO +
+          persistence.COTA_CAPITAL +
+          persistence.TAXA_ARMAZENAMENTO +
+          persistence.QUEBRA_TECNICA),
     };
   }
 
-  toSaidaProdutorDomain(persistence: SaidasGraosProdutorPersistence): SaidasGraosProdutorDomain {
+  toSaidaProdutorDomain(
+    persistence: SaidasGraosProdutorPersistence,
+  ): SaidasGraosProdutorDomain {
     return {
       idProdutor: persistence.ID_PRODUTOR,
       produtor: persistence.PRODUTOR,
       peso: persistence.PESO,
       descontoClassificacao: persistence.DESCONTO_CLASSIFICACAO,
-      pesoLiquido: persistence.PESO - persistence.DESCONTO_CLASSIFICACAO
+      pesoLiquido: persistence.PESO - persistence.DESCONTO_CLASSIFICACAO,
     };
   }
 
-  toSaldoProdutorDomain(persistence: SaldoProdutorPersistence): SaldoProdutorDomain {
+  toSaldoProdutorDomain(
+    persistence: SaldoProdutorPersistence,
+  ): SaldoProdutorDomain {
     return {
       idProdutor: persistence.ID_PRODUTOR,
       produtor: persistence.PRODUTOR,
-      saldo: persistence.SALDO
+      saldo: persistence.SALDO,
     };
   }
 }

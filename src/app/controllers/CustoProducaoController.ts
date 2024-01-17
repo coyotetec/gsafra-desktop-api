@@ -6,10 +6,10 @@ import TalhaoRepository from '../repositories/TalhaoRepository';
 class CustoProducaoController {
   async totalCategory(request: Request, response: Response) {
     const { idSafra, idTalhao, startDate, endDate } = request.query as {
-      idSafra?: string,
+      idSafra?: string;
       idTalhao?: string;
-      startDate?: string,
-      endDate?: string,
+      startDate?: string;
+      endDate?: string;
     };
 
     if (!idSafra) {
@@ -17,41 +17,50 @@ class CustoProducaoController {
     }
 
     const parsedIdTalhao = idTalhao ? Number(idTalhao) : undefined;
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     const [totalCustoCategoriaData, totalArea] = await Promise.all([
-      CustoProducaoRepository.findCustoCategoria({
+      CustoProducaoRepository.findCustoCategoria(request.databaseName, {
         idSafra,
         idTalhao: parsedIdTalhao,
         startDate: parsedStartDate,
         endDate: parsedEndDate,
       }),
-      TalhaoRepository.findArea(idSafra, parsedIdTalhao)
+      TalhaoRepository.findArea(request.databaseName, idSafra, parsedIdTalhao),
     ]);
 
-    const totalCusto = totalCustoCategoriaData.reduce((acc, curr) => acc + curr.total, 0);
+    const totalCusto = totalCustoCategoriaData.reduce(
+      (acc, curr) => acc + curr.total,
+      0,
+    );
     const totalCustoPorHectare = Number((totalCusto / totalArea).toFixed(2));
     const totalCustoCategoria = totalCustoCategoriaData.map((item) => ({
       total: item.total,
       categoria: item.categoria,
       totalPorHectare: Number((item.total / totalArea).toFixed(2)),
-      porcentagem: Number(((item.total * 100) / totalCusto).toFixed(2))
+      porcentagem: Number(((item.total * 100) / totalCusto).toFixed(2)),
     }));
 
-    response.json({ totalCusto, totalCustoPorHectare, totalCustoCategoria, });
+    response.json({ totalCusto, totalCustoPorHectare, totalCustoCategoria });
   }
 
   async totalTalhao(request: Request, response: Response) {
     const { idSafra, idTalhao, startDate, endDate } = request.query as {
-      idSafra?: string,
+      idSafra?: string;
       idTalhao?: string;
-      startDate?: string,
-      endDate?: string,
+      startDate?: string;
+      endDate?: string;
     };
 
     if (!idSafra) {
@@ -59,24 +68,33 @@ class CustoProducaoController {
     }
 
     const parsedIdTalhao = idTalhao ? Number(idTalhao) : undefined;
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     const [totalCustoTalhaoData, totalArea] = await Promise.all([
-      CustoProducaoRepository.findCustoTalhao({
+      CustoProducaoRepository.findCustoTalhao(request.databaseName, {
         idSafra,
         idTalhao: parsedIdTalhao,
         startDate: parsedStartDate,
         endDate: parsedEndDate,
       }),
-      TalhaoRepository.findArea(idSafra, parsedIdTalhao)
+      TalhaoRepository.findArea(request.databaseName, idSafra, parsedIdTalhao),
     ]);
 
-    const totalCusto = totalCustoTalhaoData.reduce((acc, curr) => acc + curr.total, 0);
+    const totalCusto = totalCustoTalhaoData.reduce(
+      (acc, curr) => acc + curr.total,
+      0,
+    );
     const totalCustoPorHectare = Number((totalCusto / totalArea).toFixed(2));
     const totalCustoTalhao = totalCustoTalhaoData.map((item) => ({
       total: item.total,

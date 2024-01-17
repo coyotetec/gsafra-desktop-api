@@ -7,17 +7,23 @@ import { financialStatus } from '../../types/FinanceiroTypes';
 class ContaReceberController {
   async total(request: Request, response: Response) {
     const { startDate, endDate, idSafra, status } = request.query as {
-      startDate?: string,
-      endDate?: string,
-      idSafra?: string,
-      status?: financialStatus,
+      startDate?: string;
+      endDate?: string;
+      idSafra?: string;
+      status?: financialStatus;
     };
 
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
     let totalNextSeven: TotalDomain = {
@@ -29,7 +35,7 @@ class ContaReceberController {
       quantity: 0,
     };
 
-    const total = await FinanceiroRepository.findTotal({
+    const total = await FinanceiroRepository.findTotal(request.databaseName, {
       tipo: 'receber',
       period: 0,
       status,
@@ -40,7 +46,7 @@ class ContaReceberController {
 
     if (parsedStartDate) {
       [totalNextSeven, totalNextFifteen] = await Promise.all([
-        FinanceiroRepository.findTotal({
+        FinanceiroRepository.findTotal(request.databaseName, {
           tipo: 'receber',
           period: 7,
           status,
@@ -48,21 +54,21 @@ class ContaReceberController {
           endDate: parsedEndDate,
           idSafra,
         }),
-        FinanceiroRepository.findTotal({
+        FinanceiroRepository.findTotal(request.databaseName, {
           tipo: 'receber',
           period: 15,
           status,
           startDate: parsedStartDate,
           endDate: parsedEndDate,
           idSafra,
-        })
+        }),
       ]);
     }
 
     response.json({
       ...total,
-      totalNextSeven: totalNextSeven,
-      totalNextFifteen: totalNextFifteen,
+      totalNextSeven,
+      totalNextFifteen,
     });
   }
 }

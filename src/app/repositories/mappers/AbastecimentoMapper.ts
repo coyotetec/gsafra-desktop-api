@@ -8,7 +8,7 @@ import {
   DetailsPersistence,
   DetailsDomain,
   TotalBySafraPersistence,
-  TotalBySafraDomain
+  TotalBySafraDomain,
 } from '../../../types/AbastecimentoTypes';
 
 class AbastecimentoMapper {
@@ -16,21 +16,23 @@ class AbastecimentoMapper {
     return {
       total: persistence.TOTAL,
       mes: persistence.MES,
-      ano: persistence.ANO
+      ano: persistence.ANO,
     };
   }
 
   toTotalFuelDomain(persistence: TotalFuelPersistence): TotalFuelDomain {
     return {
       total: persistence.TOTAL,
-      combustivel: persistence.COMBUSTIVEL
+      combustivel: persistence.COMBUSTIVEL,
     };
   }
 
-  toTotalPatrimonyDomain(persistence: TotalPatrimonyPersistence): TotalPatrimonyDomain {
+  toTotalPatrimonyDomain(
+    persistence: TotalPatrimonyPersistence,
+  ): TotalPatrimonyDomain {
     return {
       total: persistence.TOTAL,
-      tipoPatrimonio: persistence.TIPO_PATRIMONIO
+      tipoPatrimonio: persistence.TIPO_PATRIMONIO,
     };
   }
 
@@ -49,7 +51,9 @@ class AbastecimentoMapper {
     };
   }
 
-  toTotalBySafraDomain(persistence: TotalBySafraPersistence): TotalBySafraDomain {
+  toTotalBySafraDomain(
+    persistence: TotalBySafraPersistence,
+  ): TotalBySafraDomain {
     return {
       insumo: persistence.INSUMO,
       total: persistence.TOTAL,

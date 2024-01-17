@@ -3,22 +3,26 @@ import { ProdutorDomain } from '../../types/PessoaTypes';
 import PessoaMapper from './mappers/PessoaMapper';
 
 class PessoaRepository {
-  findAllProdutores() {
+  findAllProdutores(databaseName: string) {
     return new Promise<ProdutorDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select id, razao_social as nome from pessoa
         where produtor_rural = 1
         and status = 1
         order by razao_social
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map((produtor) => PessoaMapper.toProdutorDomain(produtor)));
-        }
+          resolve(
+            result.map((produtor) => PessoaMapper.toProdutorDomain(produtor)),
+          );
+        },
       );
     });
   }

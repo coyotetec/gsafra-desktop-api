@@ -1,25 +1,31 @@
 import { format } from 'date-fns';
 import database from '../../database';
-import { DetailsDomain, TotalBySafraDomain, TotalDomain, TotalFuelDomain, TotalPatrimonyDomain } from '../../types/AbastecimentoTypes';
+import {
+  DetailsDomain,
+  TotalBySafraDomain,
+  TotalDomain,
+  TotalFuelDomain,
+  TotalPatrimonyDomain,
+} from '../../types/AbastecimentoTypes';
 import AbastecimentoMapper from './mappers/AbastecimentoMapper';
 
 interface FindTotalValueArgs {
-  startDate?: Date,
-  endDate?: Date,
-  idPatrimonio?: number,
-  idProdutoAlmoxarifado?: number
-  idAlmoxarifado?: number,
-  idTipoPatrimonio?: number,
-  custo: 'atual' | 'medio',
+  startDate?: Date;
+  endDate?: Date;
+  idPatrimonio?: number;
+  idProdutoAlmoxarifado?: number;
+  idAlmoxarifado?: number;
+  idTipoPatrimonio?: number;
+  custo: 'atual' | 'medio';
 }
 
 interface FindTotalQtyArgs {
-  startDate?: Date,
-  endDate?: Date,
-  idPatrimonio?: number,
-  idProdutoAlmoxarifado?: number
-  idAlmoxarifado?: number,
-  idTipoPatrimonio?: number,
+  startDate?: Date;
+  endDate?: Date;
+  idPatrimonio?: number;
+  idProdutoAlmoxarifado?: number;
+  idAlmoxarifado?: number;
+  idTipoPatrimonio?: number;
 }
 
 interface FindTotalBySafraArgs {
@@ -30,15 +36,18 @@ interface FindTotalBySafraArgs {
 }
 
 class AbastecimentoRepository {
-  findTotalMonthlyValue({
-    startDate,
-    endDate,
-    idPatrimonio,
-    idProdutoAlmoxarifado,
-    idAlmoxarifado,
-    idTipoPatrimonio,
-    custo,
-  }: FindTotalValueArgs): Promise<TotalDomain[]> {
+  findTotalMonthlyValue(
+    databaseName: string,
+    {
+      startDate,
+      endDate,
+      idPatrimonio,
+      idProdutoAlmoxarifado,
+      idAlmoxarifado,
+      idTipoPatrimonio,
+      custo,
+    }: FindTotalValueArgs,
+  ): Promise<TotalDomain[]> {
     return new Promise((resolve, reject) => {
       const query = `
       select
@@ -58,27 +67,27 @@ class AbastecimentoRepository {
       order by ano, mes
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toTotalDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(result.map((item) => AbastecimentoMapper.toTotalDomain(item)));
+      });
     });
   }
 
-  findTotalMonthlyQty({
-    startDate,
-    endDate,
-    idPatrimonio,
-    idProdutoAlmoxarifado,
-    idAlmoxarifado,
-    idTipoPatrimonio,
-  }: FindTotalQtyArgs): Promise<TotalDomain[]> {
+  findTotalMonthlyQty(
+    databaseName: string,
+    {
+      startDate,
+      endDate,
+      idPatrimonio,
+      idProdutoAlmoxarifado,
+      idAlmoxarifado,
+      idTipoPatrimonio,
+    }: FindTotalQtyArgs,
+  ): Promise<TotalDomain[]> {
     return new Promise((resolve, reject) => {
       const query = `
       select
@@ -98,28 +107,28 @@ class AbastecimentoRepository {
       order by ano, mes
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toTotalDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(result.map((item) => AbastecimentoMapper.toTotalDomain(item)));
+      });
     });
   }
 
-  findDetails({
-    startDate,
-    endDate,
-    idPatrimonio,
-    idProdutoAlmoxarifado,
-    idAlmoxarifado,
-    idTipoPatrimonio,
-    custo,
-  }: FindTotalValueArgs): Promise<DetailsDomain[]> {
+  findDetails(
+    databaseName: string,
+    {
+      startDate,
+      endDate,
+      idPatrimonio,
+      idProdutoAlmoxarifado,
+      idAlmoxarifado,
+      idTipoPatrimonio,
+      custo,
+    }: FindTotalValueArgs,
+  ): Promise<DetailsDomain[]> {
     return new Promise((resolve, reject) => {
       const query = `
       select
@@ -149,28 +158,30 @@ class AbastecimentoRepository {
       order by ano, mes
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toDetailsDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((item) => AbastecimentoMapper.toDetailsDomain(item)),
+        );
+      });
     });
   }
 
-  findTotalFuelValue({
-    startDate,
-    endDate,
-    idPatrimonio,
-    idProdutoAlmoxarifado,
-    idAlmoxarifado,
-    idTipoPatrimonio,
-    custo,
-  }: FindTotalValueArgs): Promise<TotalFuelDomain[]> {
+  findTotalFuelValue(
+    databaseName: string,
+    {
+      startDate,
+      endDate,
+      idPatrimonio,
+      idProdutoAlmoxarifado,
+      idAlmoxarifado,
+      idTipoPatrimonio,
+      custo,
+    }: FindTotalValueArgs,
+  ): Promise<TotalFuelDomain[]> {
     return new Promise((resolve, reject) => {
       const query = `
       select
@@ -189,27 +200,29 @@ class AbastecimentoRepository {
       group by combustivel
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toTotalFuelDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((item) => AbastecimentoMapper.toTotalFuelDomain(item)),
+        );
+      });
     });
   }
 
-  findTotalFuelQty({
-    startDate,
-    endDate,
-    idPatrimonio,
-    idProdutoAlmoxarifado,
-    idAlmoxarifado,
-    idTipoPatrimonio,
-  }: FindTotalQtyArgs): Promise<TotalFuelDomain[]> {
+  findTotalFuelQty(
+    databaseName: string,
+    {
+      startDate,
+      endDate,
+      idPatrimonio,
+      idProdutoAlmoxarifado,
+      idAlmoxarifado,
+      idTipoPatrimonio,
+    }: FindTotalQtyArgs,
+  ): Promise<TotalFuelDomain[]> {
     return new Promise((resolve, reject) => {
       const query = `
       select
@@ -228,27 +241,29 @@ class AbastecimentoRepository {
       group by combustivel
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toTotalFuelDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((item) => AbastecimentoMapper.toTotalFuelDomain(item)),
+        );
+      });
     });
   }
 
-  findTotalPatrimonyValue({
-    startDate,
-    endDate,
-    idPatrimonio,
-    idProdutoAlmoxarifado,
-    idAlmoxarifado,
-    custo,
-  }: FindTotalValueArgs): Promise<TotalPatrimonyDomain[]> {
+  findTotalPatrimonyValue(
+    databaseName: string,
+    {
+      startDate,
+      endDate,
+      idPatrimonio,
+      idProdutoAlmoxarifado,
+      idAlmoxarifado,
+      custo,
+    }: FindTotalValueArgs,
+  ): Promise<TotalPatrimonyDomain[]> {
     return new Promise((resolve, reject) => {
       const query = `
       select
@@ -266,26 +281,30 @@ class AbastecimentoRepository {
       group by tipo_patrimonio
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toTotalPatrimonyDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((item) =>
+            AbastecimentoMapper.toTotalPatrimonyDomain(item),
+          ),
+        );
+      });
     });
   }
 
-  findTotalPatrimonyQty({
-    startDate,
-    endDate,
-    idPatrimonio,
-    idProdutoAlmoxarifado,
-    idAlmoxarifado,
-  }: FindTotalQtyArgs): Promise<TotalPatrimonyDomain[]> {
+  findTotalPatrimonyQty(
+    databaseName: string,
+    {
+      startDate,
+      endDate,
+      idPatrimonio,
+      idProdutoAlmoxarifado,
+      idAlmoxarifado,
+    }: FindTotalQtyArgs,
+  ): Promise<TotalPatrimonyDomain[]> {
     return new Promise((resolve, reject) => {
       const query = `
       select
@@ -303,20 +322,24 @@ class AbastecimentoRepository {
       group by tipo_patrimonio
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toTotalPatrimonyDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((item) =>
+            AbastecimentoMapper.toTotalPatrimonyDomain(item),
+          ),
+        );
+      });
     });
   }
 
-  findTotalFuelBySafra({ idSafra, idTalhao, startDate, endDate }: FindTotalBySafraArgs) {
+  findTotalFuelBySafra(
+    databaseName: string,
+    { idSafra, idTalhao, startDate, endDate }: FindTotalBySafraArgs,
+  ) {
     return new Promise<TotalBySafraDomain[]>((resolve, reject) => {
       const query = `
       select
@@ -340,16 +363,15 @@ class AbastecimentoRepository {
       order by total desc
       `;
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((item) => AbastecimentoMapper.toTotalBySafraDomain(item)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((item) => AbastecimentoMapper.toTotalBySafraDomain(item)),
+        );
+      });
     });
   }
 }

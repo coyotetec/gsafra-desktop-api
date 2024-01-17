@@ -1,6 +1,12 @@
 import { format } from 'date-fns';
 import database from '../../database';
-import { EntradasGraosDomain, EntradasGraosProdutorDomain, SaidasGraosDomain, SaidasGraosProdutorDomain, SaldoProdutorDomain } from '../../types/EstoqueGraos';
+import {
+  EntradasGraosDomain,
+  EntradasGraosProdutorDomain,
+  SaidasGraosDomain,
+  SaidasGraosProdutorDomain,
+  SaldoProdutorDomain,
+} from '../../types/EstoqueGraos';
 import EstoqueGraosMapper from './mappers/EstoqueGraosMapper';
 
 interface EstoqueGraosArgs {
@@ -13,9 +19,20 @@ interface EstoqueGraosArgs {
 }
 
 class EstoqueGraosRepository {
-  findEntradas({ idCultura, startDate, endDate, idProdutor, idArmazenamento, idSafra }: EstoqueGraosArgs) {
+  findEntradas(
+    databaseName: string,
+    {
+      idCultura,
+      startDate,
+      endDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    }: EstoqueGraosArgs,
+  ) {
     return new Promise<EntradasGraosDomain>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           sum(colheita.subtotal) as peso,
@@ -50,21 +67,33 @@ class EstoqueGraosRepository {
         ${idProdutor ? `and colheita.id_cliente_silo = ${idProdutor}` : ''}
         ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
         ${idSafra ? `and colheita.id_ciclo_producao = ${idSafra}` : ''}
-        `, [],
+        `,
+        [],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(EstoqueGraosMapper.toEntradaDomain(result));
-        }
+        },
       );
     });
   }
 
-  findSaidas({ idCultura, startDate, endDate, idProdutor, idArmazenamento, idSafra }: EstoqueGraosArgs) {
+  findSaidas(
+    databaseName: string,
+    {
+      idCultura,
+      startDate,
+      endDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    }: EstoqueGraosArgs,
+  ) {
     return new Promise<SaidasGraosDomain>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           coalesce(sum(venda_agricultura_saida.subtotal), 0) as peso,
@@ -79,21 +108,32 @@ class EstoqueGraosRepository {
         ${idProdutor ? `and venda_agricultura.id_cliente_silo = ${idProdutor}` : ''}
         ${idArmazenamento ? `and venda_agricultura_saida.id_estoque_agri_local = ${idArmazenamento}` : ''}
         ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
-        `, [],
+        `,
+        [],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(EstoqueGraosMapper.toSaidaDomain(result));
-        }
+        },
       );
     });
   }
 
-  findSaldoAnterior({ idCultura, startDate, idProdutor, idArmazenamento, idSafra }: EstoqueGraosArgs) {
+  findSaldoAnterior(
+    databaseName: string,
+    {
+      idCultura,
+      startDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    }: EstoqueGraosArgs,
+  ) {
     return new Promise<number>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select sum(total) as saldo
         from (
@@ -134,21 +174,33 @@ class EstoqueGraosRepository {
           ${idArmazenamento ? `and colheita.id_estoque_agri_local = ${idArmazenamento}` : ''}
           ${idSafra ? `and colheita.id_ciclo_producao = ${idSafra}` : ''}
         )
-        `, [],
+        `,
+        [],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.SALDO);
-        }
+        },
       );
     });
   }
 
-  findEntradasProdutor({ idCultura, startDate, endDate, idProdutor, idArmazenamento, idSafra }: EstoqueGraosArgs) {
+  findEntradasProdutor(
+    databaseName: string,
+    {
+      idCultura,
+      startDate,
+      endDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    }: EstoqueGraosArgs,
+  ) {
     return new Promise<EntradasGraosProdutorDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           pessoa.id as id_produtor,
@@ -184,21 +236,37 @@ class EstoqueGraosRepository {
         ${idSafra ? `and colheita.id_ciclo_producao = ${idSafra}` : ''}
         group by id_produtor, produtor
         order by id_produtor
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map(item => EstoqueGraosMapper.toEntradaProdutorDomain(item)));
-        }
+          resolve(
+            result.map((item) =>
+              EstoqueGraosMapper.toEntradaProdutorDomain(item),
+            ),
+          );
+        },
       );
     });
   }
 
-  findSaidasProdutor({ idCultura, startDate, endDate, idProdutor, idArmazenamento, idSafra }: EstoqueGraosArgs) {
+  findSaidasProdutor(
+    databaseName: string,
+    {
+      idCultura,
+      startDate,
+      endDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    }: EstoqueGraosArgs,
+  ) {
     return new Promise<SaidasGraosProdutorDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           pessoa.id as id_produtor,
@@ -218,21 +286,36 @@ class EstoqueGraosRepository {
         ${idSafra ? `and venda_agricultura_item.id_ciclo_producao = ${idSafra}` : ''}
         group by id_produtor, produtor
         order by id_produtor
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map(item => EstoqueGraosMapper.toSaidaProdutorDomain(item)));
-        }
+          resolve(
+            result.map((item) =>
+              EstoqueGraosMapper.toSaidaProdutorDomain(item),
+            ),
+          );
+        },
       );
     });
   }
 
-  findSaldoAnteriorProdutor({ idCultura, startDate, idProdutor, idArmazenamento, idSafra }: EstoqueGraosArgs) {
+  findSaldoAnteriorProdutor(
+    databaseName: string,
+    {
+      idCultura,
+      startDate,
+      idProdutor,
+      idArmazenamento,
+      idSafra,
+    }: EstoqueGraosArgs,
+  ) {
     return new Promise<SaldoProdutorDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select id_produtor, produtor, sum(total) as saldo
         from (
@@ -286,14 +369,19 @@ class EstoqueGraosRepository {
           group by id_produtor, produtor
         ) group by id_produtor, produtor
         order by id_produtor
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map(item => EstoqueGraosMapper.toSaldoProdutorDomain(item)));
-        }
+          resolve(
+            result.map((item) =>
+              EstoqueGraosMapper.toSaldoProdutorDomain(item),
+            ),
+          );
+        },
       );
     });
   }

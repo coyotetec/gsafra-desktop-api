@@ -1,4 +1,7 @@
-import { AgriLocalDomain, AgriLocalPersistence } from '../../../types/AgriLocalTypes';
+import {
+  AgriLocalDomain,
+  AgriLocalPersistence,
+} from '../../../types/AgriLocalTypes';
 
 class AgriLocalMapper {
   toDomain(persistence: AgriLocalPersistence): AgriLocalDomain {

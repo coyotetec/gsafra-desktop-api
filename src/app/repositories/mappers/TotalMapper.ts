@@ -4,7 +4,7 @@ class TotalMapper {
   toTotalDomain(persistence: TotalPersistence): TotalDomain {
     return {
       quantity: Number(persistence.QUANTIDADE),
-      total: Number(persistence.TOTAL)
+      total: Number(persistence.TOTAL),
     };
   }
 }

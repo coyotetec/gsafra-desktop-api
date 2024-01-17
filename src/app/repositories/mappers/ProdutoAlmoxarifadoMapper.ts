@@ -1,4 +1,7 @@
-import { CombustivelDomain, CombustivelPersistence } from '../../../types/ProdutoAlmoxarifadoTypes';
+import {
+  CombustivelDomain,
+  CombustivelPersistence,
+} from '../../../types/ProdutoAlmoxarifadoTypes';
 
 class ProdutoAlmoxarifadoMapper {
   toCombustivelDomain(persistence: CombustivelPersistence): CombustivelDomain {

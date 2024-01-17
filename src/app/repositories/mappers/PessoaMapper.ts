@@ -1,4 +1,7 @@
-import { ProdutorDomain, ProdutorPersistence } from '../../../types/PessoaTypes';
+import {
+  ProdutorDomain,
+  ProdutorPersistence,
+} from '../../../types/PessoaTypes';
 
 class PessoaMapper {
   toProdutorDomain(persistence: ProdutorPersistence): ProdutorDomain {

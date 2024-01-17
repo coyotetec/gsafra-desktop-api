@@ -6,7 +6,7 @@ class TalhaoMapper {
       id: persistence.ID,
       talhao: persistence.TALHAO,
       variedade: persistence.VARIEDADE,
-      safra: persistence.SAFRA
+      safra: persistence.SAFRA,
     };
   }
 }

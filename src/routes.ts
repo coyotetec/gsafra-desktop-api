@@ -55,17 +55,38 @@ router.get('/movimento-conta/:codigo', MovimentoContaController.index);
 
 router.get('/financeiro-views', FinanceiroViewController.index);
 router.get('/financeiro-views/:id', FinanceiroViewController.find);
-router.get('/financeiro-views/:id/detalhes', FinanceiroViewController.findDetail);
+router.get(
+  '/financeiro-views/:id/detalhes',
+  FinanceiroViewController.findDetail,
+);
 
-router.get('/abastecimento/resumo-mensal', AbastecimentoController.totalMonthly);
-router.get('/abastecimento/resumo-combustivel', AbastecimentoController.totalFuel);
-router.get('/abastecimento/resumo-patrimonio', AbastecimentoController.totalPatrimony);
+router.get(
+  '/abastecimento/resumo-mensal',
+  AbastecimentoController.totalMonthly,
+);
+router.get(
+  '/abastecimento/resumo-combustivel',
+  AbastecimentoController.totalFuel,
+);
+router.get(
+  '/abastecimento/resumo-patrimonio',
+  AbastecimentoController.totalPatrimony,
+);
 router.get('/abastecimento/detalhes', AbastecimentoController.description);
-router.get('/abastecimento/custo-producao', AbastecimentoController.totalFuelBySafra);
+router.get(
+  '/abastecimento/custo-producao',
+  AbastecimentoController.totalFuelBySafra,
+);
 
-router.get('/atividade-agricola/custo-producao', AtividadeAgricolaController.totalInputsBySafra);
+router.get(
+  '/atividade-agricola/custo-producao',
+  AtividadeAgricolaController.totalInputsBySafra,
+);
 
-router.get('/manutencao/custo-producao', ManutencaoController.totalInputsBySafra);
+router.get(
+  '/manutencao/custo-producao',
+  ManutencaoController.totalInputsBySafra,
+);
 
 router.get('/colheita/total', ColheitaController.total);
 router.get('/colheita/desconto', ColheitaController.descontoTotal);

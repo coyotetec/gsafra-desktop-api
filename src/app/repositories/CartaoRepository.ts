@@ -11,26 +11,31 @@ interface FindTotalArgs {
 }
 
 class CartaoRepository {
-  findLimitTotal() {
+  findLimitTotal(databaseName: string) {
     return new Promise<number>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         SELECT
         SUM(limite) AS total
         FROM cartao
-        `, [],
+        `,
+        [],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.TOTAL || 0);
-        }
+        },
       );
     });
   }
 
-  findTotal({ startDate, endDate, idSafra }: FindTotalArgs) {
+  findTotal(
+    databaseName: string,
+    { startDate, endDate, idSafra }: FindTotalArgs,
+  ) {
     return new Promise<TotalDomain>((resolve, reject) => {
       let query = `
       SELECT
@@ -63,16 +68,13 @@ class CartaoRepository {
         `;
       }
 
-      database.query(
-        query, [],
-        (err, [result]) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(TotalMapper.toTotalDomain(result));
+      database.query(databaseName, query, [], (err, [result]) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(TotalMapper.toTotalDomain(result));
+      });
     });
   }
 }

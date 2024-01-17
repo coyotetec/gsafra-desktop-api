@@ -3,7 +3,9 @@ import PessoaRepository from '../repositories/PessoaRepository';
 
 class PessoaController {
   async indexProdutor(request: Request, response: Response) {
-    const produtores = await PessoaRepository.findAllProdutores();
+    const produtores = await PessoaRepository.findAllProdutores(
+      request.databaseName,
+    );
 
     response.json(produtores);
   }

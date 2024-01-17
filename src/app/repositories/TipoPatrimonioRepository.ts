@@ -2,19 +2,21 @@ import database from '../../database';
 import TipoPatrimonioMapper from './mappers/TipoPatrimonioMapper';
 
 class TipoPatrimonioRepository {
-  findAll() {
+  findAll(databaseName: string) {
     return new Promise((resolve, reject) => {
       database.query(
+        databaseName,
         `
         SELECT * FROM tipo_patrimonio
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
-          resolve(result.map(item => TipoPatrimonioMapper.toDomain(item)));
-        }
+          resolve(result.map((item) => TipoPatrimonioMapper.toDomain(item)));
+        },
       );
     });
   }

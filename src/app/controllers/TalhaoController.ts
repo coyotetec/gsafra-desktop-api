@@ -9,7 +9,10 @@ class TalhaoController {
       return response.status(400).json({ message: 'Id safra obrigatório' });
     }
 
-    const talhoes = await TalhaoRepository.findAll(idSafra);
+    const talhoes = await TalhaoRepository.findAll(
+      request.databaseName,
+      idSafra,
+    );
 
     response.json(talhoes);
   }

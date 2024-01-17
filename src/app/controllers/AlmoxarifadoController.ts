@@ -3,7 +3,9 @@ import AlmoxarifadoRepository from '../repositories/AlmoxarifadoRepository';
 
 class AlmoxarifadoController {
   async index(request: Request, response: Response) {
-    const almoxarifados = await AlmoxarifadoRepository.findAll();
+    const almoxarifados = await AlmoxarifadoRepository.findAll(
+      request.databaseName,
+    );
 
     response.json(almoxarifados);
   }

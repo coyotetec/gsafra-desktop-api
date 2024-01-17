@@ -3,11 +3,12 @@ import { dbOptionsGen } from '../config/database';
 
 export default {
   query(
+    databaseName: string,
     query: string,
     params: any[],
     callback: (err: any, result: any[]) => void,
   ) {
-    Firebird.attach(dbOptionsGen(), (err, db) => {
+    Firebird.attach(dbOptionsGen(databaseName), (err, db) => {
       if (err) {
         return callback(err, []);
       }
@@ -22,5 +23,5 @@ export default {
         callback(null, result);
       });
     });
-  }
+  },
 };

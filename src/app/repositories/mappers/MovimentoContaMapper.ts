@@ -1,7 +1,12 @@
-import { MovimentoContaDomain, MovimentoContaPersistence } from '../../../types/MovimentoContaTypes';
+import {
+  MovimentoContaDomain,
+  MovimentoContaPersistence,
+} from '../../../types/MovimentoContaTypes';
 
 class MovimentoConta {
-  toMovimentoContaDomain(persistence: MovimentoContaPersistence): MovimentoContaDomain {
+  toMovimentoContaDomain(
+    persistence: MovimentoContaPersistence,
+  ): MovimentoContaDomain {
     return {
       data: persistence.DATA,
       valorTotal: persistence.VALOR_TOTAL,
@@ -11,7 +16,9 @@ class MovimentoConta {
       documento: persistence.DOCUMENTO,
       descricao: persistence.DESCRICAO,
       planoConta: persistence.PLANO_CONTA,
-      tipoDocumento: persistence.TIPO_DOCUMENTO ? persistence.TIPO_DOCUMENTO.trim() : '',
+      tipoDocumento: persistence.TIPO_DOCUMENTO
+        ? persistence.TIPO_DOCUMENTO.trim()
+        : '',
     };
   }
 }

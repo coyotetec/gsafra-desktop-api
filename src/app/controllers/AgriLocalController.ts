@@ -3,7 +3,9 @@ import AgriLocalRepository from '../repositories/AgriLocalRepository';
 
 class AgriLocalController {
   async index(request: Request, response: Response) {
-    const locaisArmazenagem = await AgriLocalRepository.findAll();
+    const locaisArmazenagem = await AgriLocalRepository.findAll(
+      request.databaseName,
+    );
 
     response.json(locaisArmazenagem);
   }

@@ -30,14 +30,10 @@ interface FindTotalArgs {
 }
 
 class FinanceiroRepository {
-  findTotal({
-    tipo,
-    status,
-    startDate,
-    endDate,
-    period = 0,
-    idSafra,
-  }: FindTotalArgs) {
+  findTotal(
+    databaseName: string,
+    { tipo, status, startDate, endDate, period = 0, idSafra }: FindTotalArgs,
+  ) {
     return new Promise<TotalDomain>((resolve, reject) => {
       let query = `
       SELECT
@@ -54,13 +50,17 @@ class FinanceiroRepository {
       WHERE crp_m.tipo = ?
       AND conta_receber_pagar.situacao = 'A'
       ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
-      ${period !== 0 ? `
+      ${
+        period !== 0
+          ? `
       ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${startDate ? `AND conta_receber_pagar.data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
-      ` : `
+      `
+          : `
       ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND conta_receber_pagar.data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
-      `}
+      `
+      }
       `;
 
       if (idSafra) {
@@ -86,34 +86,41 @@ class FinanceiroRepository {
         AND conta_receber_pagar_ciclo.id_ciclo_producao in (${idSafra})
         AND conta_receber_pagar.situacao = 'A'
         ${status ? `AND crp_m.tipo_lancto_financeiro = ${status === 'real' ? 1 : 2}` : ''}
-        ${period !== 0 ? `
+        ${
+          period !== 0
+            ? `
         ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${startDate ? `AND conta_receber_pagar.data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
-        ` : `
+        `
+            : `
         ${startDate ? `AND conta_receber_pagar.data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `AND conta_receber_pagar.data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
-        `}
+        `
+        }
         `;
       }
 
       database.query(
-        query, [tipo === 'receber' ? 1 : 2],
+        databaseName,
+        query,
+        [tipo === 'receber' ? 1 : 2],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(TotalMapper.toTotalDomain(result));
-        }
+        },
       );
     });
   }
 
-  findCurrentBalance(date: Date) {
+  findCurrentBalance(databaseName: string, date: Date) {
     return new Promise<number>((resolve, reject) => {
       const parsedDate = format(date, 'yyyy-MM-dd');
 
       database.query(
+        databaseName,
         `
         select sum(
           case when tipo_lancamento = 'D'
@@ -122,177 +129,205 @@ class FinanceiroRepository {
         from movimento_conta_m
         where data_compensacao < '${parsedDate}'
         and compensado = 'S'
-        `, [],
+        `,
+        [],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.SALDO_ATUAL || 0);
-        }
+        },
       );
     });
   }
 
-  findCashFlowBalance(startDate: Date, endDate: Date, idSafra?: string, status?: financialStatus) {
+  findCashFlowBalance(
+    databaseName: string,
+    startDate: Date,
+    endDate: Date,
+    idSafra?: string,
+    status?: financialStatus,
+  ) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowBalanceQueryBySafra(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          idSafra,
-          status
-        )
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            idSafra,
+            status,
+          )
         : cashFlowBalanceQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          status
-        );
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            status,
+          );
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)),
+        );
+      });
     });
   }
 
-  findCashFlowBalancePlan(startDate: Date, endDate: Date, idSafra?: string) {
+  findCashFlowBalancePlan(
+    databaseName: string,
+    startDate: Date,
+    endDate: Date,
+    idSafra?: string,
+  ) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowBalancePlanBySafraQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          idSafra
-        )
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            idSafra,
+          )
         : cashFlowBalancePlanQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-        );
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+          );
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)),
+        );
+      });
     });
   }
 
-  findCashFlowCredits(startDate: Date, endDate: Date, idSafra?: string, status?: financialStatus) {
+  findCashFlowCredits(
+    databaseName: string,
+    startDate: Date,
+    endDate: Date,
+    idSafra?: string,
+    status?: financialStatus,
+  ) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowCreditsQueryBySafra(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          idSafra,
-          status
-        )
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            idSafra,
+            status,
+          )
         : cashFlowCreditsQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          status
-        );
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            status,
+          );
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)),
+        );
+      });
     });
   }
 
-  findCashFlowCreditsPlan(startDate: Date, endDate: Date, idSafra?: string) {
+  findCashFlowCreditsPlan(
+    databaseName: string,
+    startDate: Date,
+    endDate: Date,
+    idSafra?: string,
+  ) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowCreditsPlanBySafraQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          idSafra
-        )
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            idSafra,
+          )
         : cashFlowCreditsPlanQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd')
-        );
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+          );
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)),
+        );
+      });
     });
   }
 
-  findCashFlowDebits(startDate: Date, endDate: Date, idSafra?: string, status?: financialStatus) {
+  findCashFlowDebits(
+    databaseName: string,
+    startDate: Date,
+    endDate: Date,
+    idSafra?: string,
+    status?: financialStatus,
+  ) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowDebitsQueryBySafra(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          idSafra,
-          status
-        )
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            idSafra,
+            status,
+          )
         : cashFlowDebitsQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          status
-        );
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            status,
+          );
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)),
+        );
+      });
     });
   }
 
-  findCashFlowDebitsPlan(startDate: Date, endDate: Date, idSafra?: string) {
+  findCashFlowDebitsPlan(
+    databaseName: string,
+    startDate: Date,
+    endDate: Date,
+    idSafra?: string,
+  ) {
     return new Promise<CashFlowDomain[]>((resolve, reject) => {
       const query = idSafra
         ? cashFlowDebitsPlanBySafraQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd'),
-          idSafra
-        )
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+            idSafra,
+          )
         : cashFlowDebitsPlanQuery(
-          format(startDate, 'yyyy-MM-dd'),
-          format(endDate, 'yyyy-MM-dd')
-        );
+            format(startDate, 'yyyy-MM-dd'),
+            format(endDate, 'yyyy-MM-dd'),
+          );
 
-      database.query(
-        query, [],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          }
-
-          resolve(result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)));
+      database.query(databaseName, query, [], (err, result) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        resolve(
+          result.map((cashFlow) => FinanceiroMapper.toCashFlowDomain(cashFlow)),
+        );
+      });
     });
   }
 }

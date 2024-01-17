@@ -1,6 +1,10 @@
 import { financialStatus } from '../../types/FinanceiroTypes';
 
-export const cashFlowBalanceQuery = (startDate: string, endDate: string, status?: financialStatus) => `
+export const cashFlowBalanceQuery = (
+  startDate: string,
+  endDate: string,
+  status?: financialStatus,
+) => `
 select sum(total) as total, mes, ano
 from(
     select sum(
@@ -59,7 +63,12 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowBalanceQueryBySafra = (startDate: string, endDate: string, idSafra: string, status?: financialStatus) => `
+export const cashFlowBalanceQueryBySafra = (
+  startDate: string,
+  endDate: string,
+  idSafra: string,
+  status?: financialStatus,
+) => `
 select sum(total) as total, mes, ano
 from(
   select sum(
@@ -131,7 +140,10 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowBalancePlanQuery = (startDate: string, endDate: string) => `
+export const cashFlowBalancePlanQuery = (
+  startDate: string,
+  endDate: string,
+) => `
 select sum(
   case when plano_conta.tipo = 'D'
   then (plan_financeiro_valores.valor * -1)
@@ -146,7 +158,11 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowBalancePlanBySafraQuery = (startDate: string, endDate: string, idSafra: string) => `
+export const cashFlowBalancePlanBySafraQuery = (
+  startDate: string,
+  endDate: string,
+  idSafra: string,
+) => `
 select sum(
   case when plano_conta.tipo = 'D'
   then (plan_financeiro_valores.valor * -1)
@@ -163,7 +179,11 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsQuery = (startDate: string, endDate: string, status?: financialStatus) => `
+export const cashFlowCreditsQuery = (
+  startDate: string,
+  endDate: string,
+  status?: financialStatus,
+) => `
 select sum(total) as total, mes, ano
 from(
     select sum(valor_principal) as total, extract(month from data_compensacao) as mes, extract(year from data_compensacao) as ano
@@ -206,7 +226,12 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsQueryBySafra = (startDate: string, endDate: string, idSafra: string, status?: financialStatus) => `
+export const cashFlowCreditsQueryBySafra = (
+  startDate: string,
+  endDate: string,
+  idSafra: string,
+  status?: financialStatus,
+) => `
 select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
@@ -259,7 +284,10 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsPlanQuery = (startDate: string, endDate: string) => `
+export const cashFlowCreditsPlanQuery = (
+  startDate: string,
+  endDate: string,
+) => `
 select sum(valor) as total, mes, ano
 from plan_financeiro_valores
 inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
@@ -271,7 +299,11 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowCreditsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: string) => `
+export const cashFlowCreditsPlanBySafraQuery = (
+  startDate: string,
+  endDate: string,
+  idSafra: string,
+) => `
 select sum(valor) as total, mes, ano
 from plan_financeiro_valores
 inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d
@@ -285,7 +317,11 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowDebitsQuery = (startDate: string, endDate: string, status?: financialStatus) => `
+export const cashFlowDebitsQuery = (
+  startDate: string,
+  endDate: string,
+  status?: financialStatus,
+) => `
 select sum(total) as total, mes, ano
 from(
   select sum(valor_principal * -1) as total, extract(month from data_compensacao) as mes, extract(year from data_compensacao) as ano
@@ -337,7 +373,12 @@ from(
     order by ano, mes
 `;
 
-export const cashFlowDebitsQueryBySafra = (startDate: string, endDate: string, idSafra: string, status?: financialStatus) => `
+export const cashFlowDebitsQueryBySafra = (
+  startDate: string,
+  endDate: string,
+  idSafra: string,
+  status?: financialStatus,
+) => `
 select sum(total) as total, mes, ano
 from(
   select sum(movimento_conta_m.valor_principal * -1) as total, extract(month from movimento_conta_m.data_compensacao) as mes, extract(year from movimento_conta_m.data_compensacao) as ano
@@ -414,7 +455,11 @@ group by mes, ano
 order by ano, mes
 `;
 
-export const cashFlowDebitsPlanBySafraQuery = (startDate: string, endDate: string, idSafra: string) => `
+export const cashFlowDebitsPlanBySafraQuery = (
+  startDate: string,
+  endDate: string,
+  idSafra: string,
+) => `
 select sum(valor * -1) as total, mes, ano
 from plan_financeiro_valores
 inner join plan_financeiro_d on plan_financeiro_d.id = plan_financeiro_valores.id_plan_financeiro_d

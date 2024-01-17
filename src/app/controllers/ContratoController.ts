@@ -12,7 +12,10 @@ class ContratoController {
 
     const parsedIdSafra = Number(idSafra);
 
-    const contratos = await ContratoRepository.findAll(parsedIdSafra);
+    const contratos = await ContratoRepository.findAll(
+      request.databaseName,
+      parsedIdSafra,
+    );
 
     response.json(contratos);
   }
@@ -25,22 +28,33 @@ class ContratoController {
     };
 
     if (!id) {
-      return response.status(400).json({ message: 'Id do contrato é obrigatório' });
+      return response
+        .status(400)
+        .json({ message: 'Id do contrato é obrigatório' });
     }
 
     const parsedIdContrato = Number(id);
-    const parsedStartDate = startDate ? parse(startDate, 'dd-MM-yyyy', new Date()) : undefined;
-    const parsedEndDate = endDate ? parse(endDate, 'dd-MM-yyyy', new Date()) : undefined;
+    const parsedStartDate = startDate
+      ? parse(startDate, 'dd-MM-yyyy', new Date())
+      : undefined;
+    const parsedEndDate = endDate
+      ? parse(endDate, 'dd-MM-yyyy', new Date())
+      : undefined;
 
     if (parsedStartDate && parsedEndDate && parsedStartDate > parsedEndDate) {
-      return response.status(400).json({ message: 'Data final precisa ser depois da inicial' });
+      return response
+        .status(400)
+        .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const romaneios = await ContratoRepository.findRomaneios({
-      idContrato: parsedIdContrato,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-    });
+    const romaneios = await ContratoRepository.findRomaneios(
+      request.databaseName,
+      {
+        idContrato: parsedIdContrato,
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+      },
+    );
 
     response.json(romaneios);
   }

@@ -6,7 +6,7 @@ import {
   RomaneioDomain,
   RomaneioPersistence,
   VendaDomain,
-  VendaPersistence
+  VendaPersistence,
 } from '../../../types/VendaTypes';
 
 class VendaMapper {
@@ -16,7 +16,7 @@ class VendaMapper {
       cliente: persistence.CLIENTE,
       total: persistence.TOTAL,
       totalEntregue: persistence.TOTAL_ENTREGUE,
-      porcentagem: (persistence.TOTAL_ENTREGUE * 100) / persistence.TOTAL
+      porcentagem: (persistence.TOTAL_ENTREGUE * 100) / persistence.TOTAL,
     };
   }
 
@@ -32,22 +32,27 @@ class VendaMapper {
     };
   }
 
-  toPrecoMedioClienteDomain(persistence: PrecoMedioClientePersistence): PrecoMedioClienteDomain {
+  toPrecoMedioClienteDomain(
+    persistence: PrecoMedioClientePersistence,
+  ): PrecoMedioClienteDomain {
     return {
       cliente: persistence.CLIENTE,
       precoMedioKg: persistence.PRECO_MEDIO_KG,
-      precoMedioSaca: persistence.PRECO_MEDIO_KG * 60
+      precoMedioSaca: persistence.PRECO_MEDIO_KG * 60,
     };
   }
 
-  toPrecoMedioMesDomain(persistence: PrecoMedioMesPersistence): PrecoMedioMesDomain {
+  toPrecoMedioMesDomain(
+    persistence: PrecoMedioMesPersistence,
+  ): PrecoMedioMesDomain {
     return {
       mes: persistence.MES,
       ano: persistence.ANO,
       valorTotal: persistence.VALOR_TOTAL,
       quantidadeTotal: persistence.QUANTIDADE_TOTAL,
       precoMedioKg: persistence.VALOR_TOTAL / persistence.QUANTIDADE_TOTAL,
-      precoMedioSaca: (persistence.VALOR_TOTAL / persistence.QUANTIDADE_TOTAL) * 60,
+      precoMedioSaca:
+        (persistence.VALOR_TOTAL / persistence.QUANTIDADE_TOTAL) * 60,
     };
   }
 }

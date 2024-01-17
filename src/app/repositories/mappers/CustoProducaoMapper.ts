@@ -1,10 +1,17 @@
-import { CustoCategoriaDomain, CustoCategoriaPersistence, CustoTalhaoDomain, CustoTalhaoPersistence } from '../../../types/CustoProducaoTypes';
+import {
+  CustoCategoriaDomain,
+  CustoCategoriaPersistence,
+  CustoTalhaoDomain,
+  CustoTalhaoPersistence,
+} from '../../../types/CustoProducaoTypes';
 
 class CustoProducaoMapper {
-  toCategoriaDomain(persistence: CustoCategoriaPersistence): CustoCategoriaDomain {
+  toCategoriaDomain(
+    persistence: CustoCategoriaPersistence,
+  ): CustoCategoriaDomain {
     return {
       categoria: persistence.CATEGORIA.trim(),
-      total: persistence.TOTAL
+      total: persistence.TOTAL,
     };
   }
 
@@ -16,7 +23,7 @@ class CustoProducaoMapper {
       total: persistence.TOTAL,
       totalPorHectare: persistence.TOTAL / persistence.AREA,
       area: persistence.AREA,
-      safra: persistence.SAFRA
+      safra: persistence.SAFRA,
     };
   }
 }

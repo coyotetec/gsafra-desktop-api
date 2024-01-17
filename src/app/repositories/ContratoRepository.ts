@@ -5,13 +5,14 @@ import ContratoMapper from './mappers/ContratoMapper';
 interface FindRomaneiosArgs {
   idContrato: number;
   startDate?: Date;
-  endDate?: Date
+  endDate?: Date;
 }
 
 class ContratoRepository {
-  findAll(idSafra: number) {
+  findAll(databaseName: string, idSafra: number) {
     return new Promise((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           contrato.id as id,
@@ -31,21 +32,26 @@ class ContratoRepository {
         inner join pessoa on pessoa.id = contrato.id_pessoa
         where contrato.id_ciclo_producao = ${idSafra}
         order by total_contrato desc
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.map((item) => ContratoMapper.toDomain(item)));
-        }
+        },
       );
     });
   }
 
-  findRomaneios({idContrato, startDate, endDate}: FindRomaneiosArgs) {
+  findRomaneios(
+    databaseName: string,
+    { idContrato, startDate, endDate }: FindRomaneiosArgs,
+  ) {
     return new Promise((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           venda_agricultura_saida.data as data,
@@ -63,14 +69,15 @@ class ContratoRepository {
         ${startDate ? `and venda_agricultura_saida.data >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `and venda_agricultura_saida.data <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
         order by data
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.map((item) => ContratoMapper.toRomaneioDomain(item)));
-        }
+        },
       );
     });
   }

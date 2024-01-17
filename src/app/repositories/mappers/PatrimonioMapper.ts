@@ -1,4 +1,7 @@
-import { PatrimonioDomain, PatrimonioPersistence } from '../../../types/PatrimonioTypes';
+import {
+  PatrimonioDomain,
+  PatrimonioPersistence,
+} from '../../../types/PatrimonioTypes';
 
 class PatrimonioMapper {
   toDomain(persistence: PatrimonioPersistence): PatrimonioDomain {

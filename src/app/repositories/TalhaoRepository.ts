@@ -3,9 +3,10 @@ import { TalhaoDomain } from '../../types/TalhaoTypes';
 import TalhaoMapper from './mappers/TalhaoMapper';
 
 class SafraRepository {
-  findAll(idSafra: string) {
+  findAll(databaseName: string, idSafra: string) {
     return new Promise<TalhaoDomain[]>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           talhao_safra.id,
@@ -19,35 +20,38 @@ class SafraRepository {
         where talhao_safra.status = 1
         and talhao_safra.id_ciclo_producao in (${idSafra})
         order by talhao, variedade
-        `, [],
+        `,
+        [],
         (err, result) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.map((item) => TalhaoMapper.toDomain(item)));
-        }
+        },
       );
     });
   }
 
-  findArea(idSafra: string, idTalhao?: number) {
+  findArea(databaseName: string, idSafra: string, idTalhao?: number) {
     return new Promise<number>((resolve, reject) => {
       database.query(
+        databaseName,
         `
         select
           sum(talhao_safra.hectares) as area
         from talhao_safra
         where talhao_safra.id_ciclo_producao in (${idSafra})
         ${idTalhao ? `and talhao_safra.id = ${idTalhao}` : ''}
-        `, [],
+        `,
+        [],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(result.AREA);
-        }
+        },
       );
     });
   }

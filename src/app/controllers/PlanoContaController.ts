@@ -10,7 +10,11 @@ class PlanoContaController {
       category?: 'sintetica' | 'analitica';
     };
 
-    const planosContas = await PlanoContaRepository.findAll(type, category);
+    const planosContas = await PlanoContaRepository.findAll(
+      request.databaseName,
+      type,
+      category,
+    );
 
     response.json(planosContas);
   }
@@ -40,7 +44,7 @@ class PlanoContaController {
         .json({ message: 'Data final precisa ser depois da inicial' });
     }
 
-    const total = await PlanoContaRepository.findTotal({
+    const total = await PlanoContaRepository.findTotal(request.databaseName, {
       codigo,
       startDate: parsedStartDate,
       endDate: parsedEndDate,
@@ -51,17 +55,18 @@ class PlanoContaController {
   }
 
   async financial(request: Request, response: Response) {
-    const { options, showZeros, startDate, endDate, status } = request.query as {
-      options: string;
-      showZeros: string;
-      startDate: string;
-      endDate: string;
-      status?: financialStatus;
-    };
+    const { options, showZeros, startDate, endDate, status } =
+      request.query as {
+        options: string;
+        showZeros: string;
+        startDate: string;
+        endDate: string;
+        status?: financialStatus;
+      };
 
     if (!startDate || !endDate) {
       return response.status(400).json({
-        message: 'Data final e inicial são obrigatórias'
+        message: 'Data final e inicial são obrigatórias',
       });
     }
 
@@ -72,16 +77,19 @@ class PlanoContaController {
 
     if (parsedStartDate > parsedEndDate) {
       return response.status(400).json({
-        message: 'Data final precisa ser depois da inicial'
+        message: 'Data final precisa ser depois da inicial',
       });
     }
 
-    const chartAccounts = await PlanoContaRepository.findAll();
+    const chartAccounts = await PlanoContaRepository.findAll(
+      request.databaseName,
+    );
     const total = await PlanoContaRepository.findFinancial(
+      request.databaseName,
       parsedOptions,
       parsedStartDate,
       parsedEndDate,
-      status
+      status,
     );
 
     const months = eachMonthOfInterval({

@@ -13,13 +13,10 @@ interface FindTotalArgs {
 }
 
 class ChequeRepository {
-  findTotal({
-    tipo,
-    startDate,
-    endDate,
-    period = 0,
-    idSafra,
-  }: FindTotalArgs) {
+  findTotal(
+    databaseName: string,
+    { tipo, startDate, endDate, period = 0, idSafra }: FindTotalArgs,
+  ) {
     return new Promise<TotalDomain>((resolve, reject) => {
       let query = `
       SELECT
@@ -27,13 +24,17 @@ class ChequeRepository {
       SUM(valor) AS total
       FROM cheque
       WHERE tipo = ? AND situacao = 'A'
-      ${period !== 0 ? `
+      ${
+        period !== 0
+          ? `
       ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${startDate ? `AND data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
-      ` : `
+      `
+          : `
       ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
       ${endDate ? `AND data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
-      `}
+      `
+      }
       `;
 
       if (idSafra) {
@@ -52,25 +53,31 @@ class ChequeRepository {
         INNER JOIN cheque ON cheque.id = cheque_apropriacao.id_cheque
         WHERE cheque.tipo = ? AND cheque.situacao = 'A'
         AND cheque_ciclo.id_ciclo_producao in (${idSafra})
-        ${period !== 0 ? `
+        ${
+          period !== 0
+            ? `
         ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${startDate ? `AND data_vencimento <= dateadd(day, ${period}, date '${format(startDate, 'yyyy-MM-dd')}')` : ''}
-        ` : `
+        `
+            : `
         ${startDate ? `AND data_vencimento >= '${format(startDate, 'yyyy-MM-dd')}'` : ''}
         ${endDate ? `AND data_vencimento <= '${format(endDate, 'yyyy-MM-dd')}'` : ''}
-        `}
+        `
+        }
         `;
       }
 
       database.query(
-        query, [tipo === 'receber' ? 'R' : 'E'],
+        databaseName,
+        query,
+        [tipo === 'receber' ? 'R' : 'E'],
         (err, [result]) => {
           if (err) {
             reject(err);
           }
 
           resolve(TotalMapper.toTotalDomain(result));
-        }
+        },
       );
     });
   }

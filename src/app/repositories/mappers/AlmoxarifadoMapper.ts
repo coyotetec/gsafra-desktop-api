@@ -1,4 +1,7 @@
-import { AlmoxarifadoDomain, AlmoxarifadoPersistence } from '../../../types/AlmoxarifadoTypes';
+import {
+  AlmoxarifadoDomain,
+  AlmoxarifadoPersistence,
+} from '../../../types/AlmoxarifadoTypes';
 
 class AlmoxarifadoMapper {
   toDomain(persistence: AlmoxarifadoPersistence): AlmoxarifadoDomain {

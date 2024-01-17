@@ -3,7 +3,10 @@ import ProdutoAlmoxarifadoRepository from '../repositories/ProdutoAlmoxarifadoRe
 
 class CombustivelController {
   async index(request: Request, response: Response) {
-    const combustiveis = await ProdutoAlmoxarifadoRepository.findAllCombustiveis();
+    const combustiveis =
+      await ProdutoAlmoxarifadoRepository.findAllCombustiveis(
+        request.databaseName,
+      );
 
     response.json(combustiveis);
   }
