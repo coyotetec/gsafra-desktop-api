@@ -15,11 +15,11 @@ const dbPaths =
 export function dbOptionsGen(databaseName: string): Firebird.Options {
   if (process.env.ENVIRONMENT === 'cloud') {
     return {
-      host: process.env.CLOUD_DATABASE_HOST,
-      port: Number(process.env.CLOUD_DATABASE_PORT),
-      database: `/opt/firebird/data/${databaseName}/AGRO.FDB`,
-      user: process.env.CLOUD_DATABASE_USER,
-      password: process.env.CLOUD_DATABASE_PASSWORD,
+      host: '10.101.21.54',
+      port: 3050,
+      database: 'C:\\Cyot\\AppCyot\\000124_AGROGIL\\Dados\\AGRO.FDB',
+      user: 'SYSDBA',
+      password: 'masterkey',
       lowercase_keys: false,
       pageSize: 4096,
     };
