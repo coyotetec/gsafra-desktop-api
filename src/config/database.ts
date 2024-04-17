@@ -17,7 +17,7 @@ export function dbOptionsGen(databaseName: string): Firebird.Options {
     return {
       host: '10.101.21.54',
       port: 3050,
-      database: 'C:\\Cyot\\AppCyot\\000124_AGRO\\Dados\\AGRO.FDB',
+      database: '000124_AGRO',
       user: 'SYSDBA',
       password: 'MDzp5OsbJkm3sUK1VSL0',
       lowercase_keys: false,
