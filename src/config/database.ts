@@ -15,7 +15,7 @@ const dbPaths =
 export function dbOptionsGen(databaseName: string): Firebird.Options {
   if (process.env.ENVIRONMENT === 'cloud') {
     return {
-      host: '10.101.21.54',
+      host: '200.150.193.58',
       port: 3050,
       database: '000124_AGRO',
       user: 'SYSDBA',
