@@ -4,6 +4,8 @@ export interface ContratoPersistence {
   NUMERO_CONTRATO: string;
   TOTAL_CONTRATO: number;
   TOTAL_ENTREGUE: number;
+  VALOR_CONTRATO: number;
+  VALOR_SACA: number;
 }
 
 export interface ContratoDomain {
@@ -13,6 +15,8 @@ export interface ContratoDomain {
   totalContrato: number;
   totalEntregue: number;
   porcentagem: number;
+  valorContrato: number;
+  valorSaca: number;
 }
 
 export interface RomaneioPersistence {

@@ -19,6 +19,8 @@ class ContratoRepository {
           pessoa.razao_social as cliente,
           contrato.numero as numero_contrato,
           contrato.qtde_kgs as total_contrato,
+          contrato.total as valor_contrato,
+          contrato.valor_saca,
           case when (select count(id) from venda_agricultura where venda_agricultura.id_contrato = contrato.id) > 0
           then (
             select sum(venda_agricultura_saida.qtde_kgs)
