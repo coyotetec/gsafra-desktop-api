@@ -6,6 +6,7 @@ export interface ContratoPersistence {
   TOTAL_ENTREGUE: number;
   VALOR_CONTRATO: number;
   VALOR_SACA: number;
+  DATA_VENCIMENTO: Date;
 }
 
 export interface ContratoDomain {
@@ -17,6 +18,7 @@ export interface ContratoDomain {
   porcentagem: number;
   valorContrato: number;
   valorSaca: number;
+  dataVencimento: Date;
 }
 
 export interface RomaneioPersistence {
