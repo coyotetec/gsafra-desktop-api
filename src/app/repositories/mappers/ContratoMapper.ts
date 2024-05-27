@@ -17,6 +17,7 @@ class ContratoMapper {
         (persistence.TOTAL_ENTREGUE * 100) / persistence.TOTAL_CONTRATO,
       valorContrato: persistence.VALOR_CONTRATO,
       valorSaca: persistence.VALOR_SACA,
+      dataVencimento: persistence.DATA_VENCIMENTO,
     };
   }
 
